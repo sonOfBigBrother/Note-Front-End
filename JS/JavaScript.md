@@ -1,5 +1,3 @@
-
-
 # JavaScript知识点
 
 - 原型与原型链
@@ -203,50 +201,12 @@ funciton deepClone() {
 };
 ```
 
+## 箭头函数和普通函数的区别
 
-
-```javascript
-function hoist() {
-  a = 20;
-  var b = 100;
-}
-hoist();
-console.log(a); 
-/* 
-Accessible as a global variable outside hoist() function
-Output: 20
-*/
-console.log(b); 
-/*
-Since it was declared, it is confined to the hoist() function scope.
-We can't print it out outside the confines of the hoist() function.
-Output: ReferenceError: b is not defined
-*/
-```
-
-在ES6中使用let和const定义变量时，在变量赋值前调用变量时会报ReferenceError，如下：
-
-```javascript
-console.log(hoist); // Output: ReferenceError: hoist is not defined ...
-let hoist = 'The variable has been hoisted.';
-```
-
-若是如下情况又是不同：
-
-```javascript
-let hoist;
-console.log(hoist); // Output: undefined
-hoist = 'Hoisted'
-```
-
-在严格模式中，在变量赋值前调用变量时也会报ReferenceError
-```javascript
-'use strict';
-console.log(hoist); // Output: ReferenceError: hoist is not defined
-hoist = 'Hoisted'; 
-```
+## 柯里化
 
 ## ==和===相等运算符的区别
+
 全等号检查严格相等，意味着类型和值必须相同；等号会先进行类型强制转换，然后严格比较。
 
 ## Promise对象
@@ -412,13 +372,13 @@ DOM2级事件规定的事件流包含三个阶段：
 
 ## 数组map()和forEach()的区别
 两个方法都是进行遍历数组的方法。map()方法通过调用回调函数映射每一个元素到新元素上，并且返回的是一个新数组。另一方面，forEach()为每个元素调用回调函数，但是它不返回新数组。forEach()函数通常用于在迭代中产生副作用，而 map()函数是一种常见的函数式编程技术。  
-**Conclusion**:
+**总结**:
 
 - map()能做到的forEach()也能做到，反之亦然。
 - map()分配内存并存储返回值，forEach()总是返回<strong><i>undefined</i></strong>。
 - map()返回一个新数组，forEach()通过回调修改当前数组。
 
-<a href="https://codeburst.io/javascript-map-vs-foreach-f38111822c0f">JavaScript — Map vs. ForEach</a>
+[JavaScript — Map vs. ForEach](https://codeburst.io/javascript-map-vs-foreach-f38111822c0f)
 
 ## undefined vs ReferenceError
 先比较下undefined和ReferenceError，JavaScript中声明但未初始化的变量或是typeof未声明的变量将会赋予*undefined*值,，而尝试访问一个为未声明的变量时会抛出ReferenceError。
@@ -748,3 +708,10 @@ window.onscroll = function throttle(){
 
 ### 总结
 防抖是将多次执行变为最后一次执行，节流是将多次执行变为每隔一段时间执行
+
+## NaN不等于自身
+
+根据[ECMAScript 2015文档](http://www.ecma-international.org/ecma-262/6.0/#sec-abstract-equality-comparison)所述，当两个对象比较是否相同时，若其中一个为***NaN***时，则结果为false。  
+
+![Abstract_Equality_Comparison](pic/Abstract_Equality_Comparison.png)
+
