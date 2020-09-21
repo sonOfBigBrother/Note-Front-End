@@ -54,12 +54,26 @@
 - <i>revert</i>:属性值被设置成<strong>自定义样式</strong>所定义的属性，否则属性值被设置成<strong>用户代理的默认样式</strong>。
 
 ## 盒模型(Box Model)
+
+### 标准盒子模型定义
+
 每个box由4个部分组成：内容（content）、内边距（padding）、边框（border）和外边距（margin）  
 <img src="https://mdn.mozillademos.org/files/8685/boxmodel-(3).png" alt="CSS Box model" style="height: 384px; width: 548px;">  
 <b><i>box-sizing</i></b>属性可以更改默认的CSS盒子模型，默认值为<i>content-box</i>，当前元素的宽度即content的宽度，若加上padding和border的宽度大于父元素宽度则会产生溢出问题。当设为<i>border-box</i>且设置该元素宽度时，content、padding、border的宽度之和为该宽度值，另规定content的最小宽度为0。  
 <b><i>Note:</i></b>  
 在Firefox中实现了padding-box，即width = content_width+padding_width;height = content_height+padding_height,但在<b>Firefox 50</b>中已被删除。  
 box-sizing中没有margin-box设定值，margin本身并不改变元素盒子的尺寸，没有价值且使用场景有限，见<a href="https://www.zhangxinxu.com/wordpress/2016/09/talking-about-css-margin-box/">张旭鑫的文章</a> 
+
+### 标准盒子模型和IE盒子模型的区别
+
+盒子宽度的定义和计算方式不同，其中IE盒子的宽度计算种不包含padding和border——意味着在设置二者后内容的宽度会缩减。
+
+- 标准盒子：盒子width = margin-left + border-left + padding-left + width + padding-right + border-right + margin-right
+- IE盒子：盒子width = margin-left + width + margin-right
+
+***Note***：IE 6及之后的版本运行在标准兼容模式下时使用标准盒子模型
+
+[参考资料](https://www.456bereastreet.com/archive/200612/internet_explorer_and_the_css_box_model/)
 
 ## 块级格式化上下文(Block Formatting Context)
 ### 定义
