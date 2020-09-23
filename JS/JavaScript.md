@@ -205,6 +205,10 @@ funciton deepClone() {
 
 ## 柯里化
 
+柯里化函数是指把接受多个参数的函数变换成接受一个单一参数（初始函数的第一个参数）的函数。
+
+
+
 ## ==和===相等运算符的区别
 
 全等号检查严格相等，意味着类型和值必须相同；等号会先进行类型强制转换，然后严格比较。
@@ -230,7 +234,8 @@ const promise = new Promise((resolve,reject) => {
 
 Promise构造函数接受一个函数作为参数，该函数的两个参数分别是resolve和reject。它们是由 JavaScript引擎提供的两个函数，不用自己部署。  
 <a href="http://es6.ruanyifeng.com/#docs/promise">参考资料</a>  
-<a href="https://javascript.info/promise-chaining">promise-chaining</a>
+
+[promise-chaining](https://javascript.info/promise-chaining)
 
 ## 浮点数的计算
 由于JavaScript遵循二进制浮点数算术标准，无法正确计算如0.1+0.2这样的十进制小数加法，为解决这个问题可以使用parseFloat(0.1+0.2).toFixed(10),其中10表示精度函数提升
@@ -370,7 +375,10 @@ DOM2级事件规定的事件流包含三个阶段：
 
 其余都可看做真值。
 
-## 数组map()和forEach()的区别
+## 数组
+
+### map()和forEach()的区别
+
 两个方法都是进行遍历数组的方法。map()方法通过调用回调函数映射每一个元素到新元素上，并且返回的是一个新数组。另一方面，forEach()为每个元素调用回调函数，但是它不返回新数组。forEach()函数通常用于在迭代中产生副作用，而 map()函数是一种常见的函数式编程技术。  
 **总结**:
 
@@ -379,6 +387,26 @@ DOM2级事件规定的事件流包含三个阶段：
 - map()返回一个新数组，forEach()通过回调修改当前数组。
 
 [JavaScript — Map vs. ForEach](https://codeburst.io/javascript-map-vs-foreach-f38111822c0f)
+
+### includes()和indexOf()的区别
+
+includes函数是在ES2016中定义的新方法，两者都可以用来判断数组中某个元素是否存在， 区别在于*indexOf* 函数返回指定元素的***第一个***索引值——不存在则返回-1，而且***不识别NaN***；includes函数返回布尔值，可以识别NaN
+
+```javascript
+const arr = [1, 2, 3, 4, NaN];
+// es5
+if (arr.indexOf(3) >= 0) {
+    console.log(true);
+}
+// es2016
+if (arr.includes(1)) { 
+    console.log(true);
+}
+arr.indexOf(NaN) // -1
+arr.includes(NaN) // true
+```
+
+
 
 ## undefined vs ReferenceError
 先比较下undefined和ReferenceError，JavaScript中声明但未初始化的变量或是typeof未声明的变量将会赋予*undefined*值,，而尝试访问一个为未声明的变量时会抛出ReferenceError。
@@ -394,8 +422,7 @@ console.log(variable) //output:ReferenceError: variable is not defined
 在ES6中使用let和const定义变量时，在变量赋值前调用变量时会报ReferenceError，如下：
 ```javascript
 console.log(hoist); // Output: ReferenceError: hoist is not defined ...
-let hoist = 'The variable has been hoisted.'; 
-
+let hoist = 'The variable has been hoisted.'
 ```
 
 若是如下情况又是不同：
@@ -403,7 +430,7 @@ let hoist = 'The variable has been hoisted.';
 ```javascript
 let hoist;
 console.log(hoist); // Output: undefined
-hoist = 'Hoisted'
+hoist = 'Hoisted';
 ```
 
 在严格模式中，在变量赋值前调用变量时也会报ReferenceError
@@ -574,7 +601,7 @@ const在ES2015中引入，而且是新的变量声明推荐的方法，它之后
 ### 暂时性死区
 只要块级作用域内存在let命令，它所声明的变量就“绑定”（binding）这个区域，不再受外部的影响。
 
-```
+```javascript
 var tmp = 123;
 if (true) {
   tmp = 'abc'; // ReferenceError
@@ -599,7 +626,7 @@ ES6 规定暂时性死区和let、const语句不出现变量提升，主要是�
 ## 缓存代理模式（memoization）
 缓存代理是缓存函数调用输出的过程，以便于下一次调用更快。再次调用相同输入的函数时，返回已缓存的输出，而无需再次计算。实现效果如下：
 
-```
+```javascript
 const memoize = fn => {
   const cache = new Map()
   return value => {
@@ -711,7 +738,38 @@ window.onscroll = function throttle(){
 
 ## NaN不等于自身
 
-根据[ECMAScript 2015文档](http://www.ecma-international.org/ecma-262/6.0/#sec-abstract-equality-comparison)所述，当两个对象比较是否相同时，若其中一个为***NaN***时，则结果为false。  
+根据[ECMAScript 2015文档](http://www.ecma-international.org/ecma-262/6.0/#sec-abstract-equality-comparison)所述，当两个对象比较是否相同时，若其中一个为***NaN***时，则结果为`false`。  
 
 ![Abstract_Equality_Comparison](pic/Abstract_Equality_Comparison.png)
+
+## async/await
+
+ES2017 标准引入了 `async` 函数，`async`函数是`Promise`的语法糖，从下文中的示例代码输出截图中可以看出，该函数返回`Promise`对象。
+
+```javascript
+async function hello() {
+  return "Hello"
+}
+hello();
+```
+
+![image-20200923091916560](pic/async-await.png)
+
+## 十进制转二进制
+
+`..`操作运算符是ECMAScript语言扩展E4X中定义，目前已废弃。可参看[MDN](https://developer.mozilla.org/en-US/docs/Archive/Web/E4X/Processing_XML_with_E4X)和[SO上的回答](https://stackoverflow.com/questions/4211037/what-is-the-double-dot-operator-in-javascript)
+
+```
+11..toString(2) // "1011"
+```
+
+## 有符号移位操作(>>>)
+
+移位操作符在移位前做了两种转换——第一，将不是`number`类型的数据转换为`number`；第二将`number`转换为无符号的`32bit`数据，也就是`Uint32`类型。移位0位主要就是用了js的内部特性做了前两种转换
+
+```javascript
+-9 >>> 0 // 4294967287
+```
+
+[SO上的问答](https://stackoverflow.com/questions/1822350/what-is-the-javascript-operator-and-how-do-you-use-it)
 

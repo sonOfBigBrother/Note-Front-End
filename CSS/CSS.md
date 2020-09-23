@@ -204,7 +204,7 @@ z-index可以设置成三个值：
 - 若是行内元素，为其父元素设置<i>text-align:center</i>即可
 - 若是块级元素，该元素设置<i>margin:0 auto</i>
 - 子元素包含<i>float:left</i>属性，则可让父元素宽度设置为<i>fit-content</i>，并且配合margin。另应注意<b>fit-content</b>是CSS3中新增的属性值。
-```
+```css
 .parent{
     width: -moz-fit-content;
     width: -webkit-fit-content;
@@ -213,14 +213,14 @@ z-index可以设置成三个值：
 }
 ```
 - 使用flex + justify-content:
-```
+```css
 .son{
     display: flex;
     justify-content: center;
 }
 ```
 - 使用flex 2009年的语法，与前述2012年的标准flex语法不同，是需要使用前缀的：
-```
+```css
 .parent {
     display: -webkit-box;
     -webkit-box-orient: horizontal;
@@ -240,7 +240,7 @@ z-index可以设置成三个值：
 }
 ```
 - CSS3中的新增属性<i>transform</i>：
-```
+```css
 .son{
     position:absolute;
     left:50%;
@@ -251,7 +251,7 @@ z-index可以设置成三个值：
 
 - 若是单行文本，设置<i>line-height</i>等于父元素高度。
 - 若是行内块级元素，使用<i>vertical-align</i>和伪元素实现：
-```
+```css
 .parent::after, .son{
     display:inline-block;
     vertical-align:middle;
@@ -262,14 +262,14 @@ z-index可以设置成三个值：
 }
 ```
 - 使用flex和align-item：
-```
+```css
 .parent {
   display: flex;
   align-items: center;
 }
 ```
 - 父元素设置相对定位，子元素使用transform：
-```
+```css
 .son{
     position:absolute;
     top:50%;
@@ -279,7 +279,7 @@ z-index可以设置成三个值：
 }
 ```
 - 父元素设置相对定位，子元素使用：
-```
+```css
 .son{
     position:absolute;
     height:固定值;
