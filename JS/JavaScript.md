@@ -1,7 +1,23 @@
 [toc]
 
 ---
+## 数据类型
+
+按照[MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures)上的说明，最新版的ECMAScript标准，Javascript总共有9种数据类型：
+
+- 6种原始类型：
+  - undefined
+  - Boolean
+  - Number
+  - BigInt
+  - String
+  - Symbol
+- null
+- Object
+- Function
+
 ## 原型与原型链
+
 ### 原型
 在javascript中，函数可以有属性。每个函数都有一个特殊的属性叫作原型（prototype），这个属性是一个指针，指向一个包含由特定类型的所有实例共享的属性和方法的对象。在默认情况下，所有的原型对象会自动获得一个*constructor*属性，该属性包含一个指向原型(prototype)属性所在函数的指针。下方的例子中Person.prototype.constructor指向Person  
 
@@ -484,8 +500,24 @@ console.log(typeof double); // Output: function```
 <a href="https://scotch.io/tutorials/understanding-hoisting-in-javascript#toc-caveat">understanding-hoisting-in-javascript</a>
 
 ## null和undefined的区别
-undefined表示一个变量声明但未赋值的状态，而null是一个设定值，表示空值。null是一个对象即typeof null等于object，这是JavaScript实现的一个bug，原理是——不同的对象在底层都表示为二进制，在JavaScript中二进制前三位都为0的话会被判断为object类型，null的二进制表示是全0，自然前三位也是0，所以执行 typeof 时会返回“object”，具体细节可查看<a href="https://dxr.mozilla.org/classic/source/js/src/jsapi.h">源码</a>。与null不同，undefined本身是一个type。null == undefined和null !== undefined都为真  
-<a href="https://codeburst.io/javascript-whats-the-difference-between-null-undefined-37793b5bfce6">参考资料</a>
+undefined表示一个变量声明但未赋值的状态，而null是一个设定值，表示空值。
+
+null是一个对象<code>typeof null === 'object'</code>，这是JavaScript实现的一个bug，原理是——不同的对象在底层都表示为二进制，在JavaScript中二进制前三位都为0的话会被判断为Object类型，null的二进制表示是全0，自然前三位也是0，所以执行 typeof 运算时会返回“object”，具体细节可查看<a href="https://dxr.mozilla.org/classic/source/js/src/jsapi.h">源码</a>。
+
+与null不同，undefined本身是一个数据类型，
+
+```
+console.log(typeof anything);
+// undefined。
+```
+
+null == undefined和null !== undefined都为真 
+
+### 参考资料 
+
+<a href="https://codeburst.io/javascript-whats-the-difference-between-null-undefined-37793b5bfce6">javascript-whats-the-difference-between-null-undefined</a>
+
+[The history of “typeof null”](https://2ality.com/2013/10/typeof-null.html)
 
 ## 创建对象
 
