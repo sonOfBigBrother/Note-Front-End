@@ -25,7 +25,7 @@
 作用域主要分成两种：
 
   - 词法作用域：是定义在词法阶段的作用域，也就是由你在写代码时将变量和块作用域写在哪里决定的。Javascript就是基于词法作用域
-  - 动态作用域：不关心函数和作用域是如何声明以及在何处声明，只关心它们从何处调用。Javascript并不用动态作用域，但是this机制某种程度上很像动态作用域。
+  - 动态作用域：不关心函数和作用域是如何声明以及在何处声明，只关心它们从何处调用。Javascript并不使用动态作用域，但是this机制某种程度上很像动态作用域。
 
 ### 作用域链
 
@@ -104,7 +104,9 @@
   console.log(bar.a) //2
   ```
 
-  
+### 参考资料
+
+【1】你不知道的JavaScript 上卷
 
 ## 原型与原型链
 
@@ -450,8 +452,6 @@ if (arr.includes(1)) {
 arr.indexOf(NaN) // -1
 arr.includes(NaN) // true
 ```
-
-
 
 ## undefined vs ReferenceError
 先比较下undefined和ReferenceError，JavaScript中声明但未初始化的变量或是typeof未声明的变量将会赋予*undefined*值,，而尝试访问一个为未声明的变量时会抛出ReferenceError。
