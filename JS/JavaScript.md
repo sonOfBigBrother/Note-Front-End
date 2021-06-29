@@ -55,7 +55,56 @@
 
 ### 定义
 
+当一个函数被调用时，会创建一个活动记录（也叫执行上下文）。这个记录会包含函数在哪里被调用（调用栈）、函数的调用方式、传入参数等信息，this就是这个记录的一个属性。this是在函数被调用时发生的绑定，它指向什么完全取决于函数在哪里被调用。
 
+### 绑定规则
+
+- 默认绑定：直接使用不带任何修饰的函数引用进行调用
+
+  ```javascript
+  function foo() {
+  	console.log(this.a);
+  }
+  var a = 2;
+  foo(); // 2
+  ```
+
+- 隐式绑定：调用位置是否有上下文对象，或者说是否被某个对象拥有或包含。
+
+  ```javascript
+  function foo() {
+      console.log(this.a);
+  }
+  var obj = {
+      a: 2,
+      foo: foo
+  };
+  obj.foo(); //2
+  ```
+
+- 显示绑定：通过使用函数的bind()和apply()直接指定this的绑定对象
+
+  ```javascript
+  function foo() {
+      console.log(this.a);
+  }
+  var obj = {
+      a: 2
+  };
+  foo.call(obj) //2
+  ```
+
+- new绑定：构造一个新对象，并把它绑定到函数调用的this上。
+
+  ```javascript
+  function foo(a) {
+  	this.a = a
+  }
+  var bar = new foo(2);
+  console.log(bar.a) //2
+  ```
+
+  
 
 ## 原型与原型链
 
@@ -199,7 +248,18 @@ SubType.prototype.sayAge = function(){
 }
 ```
 ## 浅拷贝和深拷贝
-浅拷贝一般通过Object.assign({},obj)  ；深拷贝的代码如下：
+### 浅拷贝
+
+对象的第一层拷贝到一个新对象上
+
+```javascript
+let obj = {name: 'david'}
+let a =Object.assign({},obj);
+//or
+let b = {...obj}
+```
+
+### 深拷贝
 
 ```javascript
 funciton deepClone() {
@@ -216,6 +276,8 @@ funciton deepClone() {
 ```
 
 ## 箭头函数和普通函数的区别
+
+
 
 ## 柯里化
 
@@ -273,7 +335,9 @@ const shallowClone = { ...obj }
 - JSON.parse(JSON.stringify(obj))可以用来克隆简单对象，但是它是CPU密集型；会丢失原型，克隆的对象由Object类型创建；并且只接受合法的JSON
 - Object.keys(obj).reduce((acc, key) => (acc[key] = obj[key], acc), {})
 
-<a href="http://voidcanvas.com/clone-an-object-in-vanilla-js-in-depth/">参考资料</a>
+### 参考资料
+
+<a href="http://voidcanvas.com/clone-an-object-in-vanilla-js-in-depth/">克隆对象</a>
 
 ## 深度冻结
 
@@ -306,40 +370,6 @@ const equals = (a, b) => {
 };
 ```
 <a href="https://30secondsofcode.org/object#equals">参考资料</a>
-
-## 跨域资源共享（CORS)
-跨域资源共享(Cross-Origin Resource Sharing) 是一种机制，它使用额外的HTTP头来告诉浏览器让运行在一个origin(domain) 上的Web应用被准许访问来自不同源服务器上的指定的资源。当一个资源从与该资源本身所在的服务器不同的域、协议或端口请求一个资源时，资源会发起一个跨域HTTP请求。  
-出于安全原因，浏览器限制从脚本内发起的跨源HTTP请求。 例如，XMLHttpRequest和Fetch API遵循同源策略。 这意味着使用这些API的Web应用程序只能从加载应用程序的同一个域请求HTTP资源，除非响应报文包含了正确CORS响应头。  
-需要应用CORS的场景：
-
-- XMLHTTPRequest或Fetch发起的HTTP请求
-- Web字体（CSS 中通过 @font-face 使用跨域字体资源）
-- WebGL贴图
-- 使用drawImage将Images/video画面绘制到canvas
-- 样式表  
-
-简单请求不会触发CORS预请求，如下几个满足简单请求的条件：
-
-- 使用如下方法之一：
-	- GET
-	- HEAD
-	- POST方法
-- Fetch规范定义了对CORS安全的首部字段集合，不得人为设置该集合之外的其他首部字段。集合如下：
-	- Accept
-	- Accept-Language
-	- Content-Language
-	- Content-Type（需要注意额外的限制）
-	- DPR
-	- Downlink
-	- Save-Data
-	- Viewport-Width
-	- Width  
-- Content-Type 的值仅限于下列三者之一：
-	- text/plain
-	- multipart/form-data
-	- application/x-www-form-urlencoded
-- 请求中的任意XMLHttpRequestUpload对象均没有注册任何事件监听器
-- 请求中没有使用ReadableStream对象
 
 ## 事件代理
 事件代理是为避免给每个子元素设置事件监听，只给父元素添加监听，利用事件冒泡的原理匹配相应的子元素事件。  
@@ -515,18 +545,22 @@ var double = 22;
 function double(num) {
   return (num*2);
 }
+console.log(typeof double); // Output: number
 ```
 
-console.log(typeof double); // Output: number```
+
 函数声明先于变量声明的示例：
 
 ```javascript
+var double;
 function double(num) {
   return (num*2);
 }
 console.log(typeof double); // Output: function```  
 
 ```
+
+### 参考资料
 
 <a href="https://scotch.io/tutorials/understanding-hoisting-in-javascript#toc-caveat">understanding-hoisting-in-javascript</a>
 
@@ -692,8 +726,8 @@ const memoize = fn => {
 
 1.  创建一个空的简单JavaScript对象，即{}  
 2.  链接该对象（设置该对象的构造函数）到另一个对象  
-3.  绑定<i>this</i>  
-4.  若函数没有返回对象，返回this
+3.  该对象绑定到函数调用的***this***
+4.  若函数没有返回其他对象，返回这个新对象
 
 ```javascript
 function create(Con, ...args) {
