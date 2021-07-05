@@ -108,6 +108,43 @@
 
 【1】你不知道的JavaScript 上卷
 
+## chrome浏览器debugger调试箭头函数时this绑定丢失问题
+
+```javascript
+var test = () => { 
+	debugger
+}
+test()
+this //undefined
+```
+
+![test](./pic/v8-opt/test.png)
+
+上述代码箭头函数中只添加debugger语句；
+
+```javascript
+var test2 = () => { 
+	this
+	debugger
+}
+test2()
+this // Window对象
+```
+
+![test2](./pic/v8-opt/test2.png)
+
+上述代码中在debugger语句前加上了this，输出结果与上一段代码不同。
+
+根据参考资料，出现上述情况是由于v8引擎优化引起的。v8会将函数内未被引用的局部变量或隐式的this存储在调用栈上，而不会存储在此函数的上下文对象中，
+
+### 参考资料
+
+[csdn博客](https://blog.csdn.net/rudy_zhou/article/details/105278657)
+
+[so上的问答](https://stackoverflow.com/questions/28388530/why-does-chrome-debugger-think-closed-local-variable-is-undefined)
+
+[v8社区issue解答](https://bugs.chromium.org/p/v8/issues/detail?id=3491)
+
 ## 原型与原型链
 
 ### 原型
