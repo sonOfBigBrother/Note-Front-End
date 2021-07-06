@@ -357,7 +357,7 @@ Promise构造函数接受一个函数作为参数，该函数的两个参数分�
 由于JavaScript遵循二进制浮点数算术标准，无法正确计算如0.1+0.2这样的十进制小数加法，为解决这个问题可以使用parseFloat(0.1+0.2).toFixed(10),其中10表示精度函数提升
 
 ## 手动创建一个bind()
-返回一个接受任意数量参数，通过 ... rest 操作符收集参数的函数。 在这个函数中，返回一个由 Function.prototype.apply 调用，context 作为上下文，args 作为参数数组的函数fn
+返回一个接受任意数量参数，通过 `...`rest操作符收集参数的函数。 在这个函数中，返回一个由 Function.prototype.apply 调用，context 作为上下文，args 作为参数数组的函数fn
 
 ```javascript
 const bind = (fn, context) => (...args) => fn.apply(context, args)
@@ -365,7 +365,7 @@ const bind = (fn, context) => (...args) => fn.apply(context, args)
 
 ## clone一个对象
 
-- 使用对象扩展操作符 ...，对象的可枚举属性可以被拷贝到新对象。
+- 使用对象扩展操作符 `...`，对象的可枚举属性可以被拷贝到新对象。
 ```
 const obj = { a: 1, b: 2 }
 const shallowClone = { ...obj }
@@ -753,10 +753,6 @@ const memoize = fn => {
 - 防止意外的全局变量
 - 修复了一些导致 JavaScript引擎难以执行优化的缺陷——有时候，相同的代码，严格模式可以比非严格模式下运行得更快。
 - 使得JavaScript更安全
-
-## 虚拟DOM
-虚拟DOM是用普通对象形式一个真实DOM树的形式，允许一个库编写代码,就像整个文档在每个改变时抛出重建，当真实DOM需要改变时才更新。比较新旧虚拟DOM更高效 ，相比重新计算虚拟DOM，改变真实DOM 节点开销更大。  
-一旦旧虚拟 DOM 和新虚拟 DOM 在框架的 diff 引擎下计算出变化，就会尽可能的以最快的有效的方式附加到真实的 DOM 上来匹配应用的新状态
 
 ## new运算符的自定义
 先来了解new操作符背后实现的逻辑：  
