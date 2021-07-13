@@ -358,7 +358,9 @@ Promise构造函数接受一个函数作为参数，该函数的两个参数分�
 
 ## 手写Promise
 
-不考虑任何异常情况，仅实现异步链式调用的核心功能。
+### 版本一
+
+不考虑任何异常情况，仅实现异步链式调用的核心功能。实现代码如下：
 
 ```javascript
 function Promise(fn) {
@@ -369,7 +371,7 @@ function Promise(fn) {
   // 这里直接往实例上挂个data
   // 然后把onResolvedCallback数组里的函数依次执行一遍就可以
   const resolve = (value) => {
-    // 注意promise的then函数需要异步执行
+    // 注意promise的then函数需要异步执行，保证then注册回调函数在resovle前执行
     setTimeout(() => {
       this.data = value;
       this.cbs.forEach((cb) => cb(value));
@@ -381,13 +383,18 @@ function Promise(fn) {
   fn(resolve);
 }
 
+//then方法返回一个Promise对象
 Promise.prototype.then = function (onResolved) {
   // 这里叫做promise2
   return new Promise((resolve) => {
+      //this指向promise1
     this.cbs.push(() => {
       const res = onResolved(this.data);
       if (res instanceof Promise) {
-        // resolve的权力被交给了user promise
+        // user promise
+        // 用户会自己决定何时resolve promise2
+      	// 只有promise2被resolve以后
+      	// then下面的链式调用函数才会继续执行
         res.then(resolve);
       } else {
         // 如果是普通值 就直接resolve
@@ -399,11 +406,108 @@ Promise.prototype.then = function (onResolved) {
 };
 ```
 
+测试的示例代码如下：
 
+```javascript
+//promise1
+new Promise((resolve) => {
+  setTimeout(() => {
+    // resolve1
+    resolve(1);
+  }, 500);
+})
+  // then1
+  .then((res) => {
+    console.log(res); //1
+    // user promise
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        // resolve2
+        resolve(2);
+      }, 500);
+    });
+  })
+  // then2
+  .then(console.log);
+
+```
+
+示例代码中```new Promise```返回的实例称为promise1，在promise1调用resolve1后触发```then```中的回调方法时，按照上文实现代码的定义返回的是promise2实例，resolve2执行后触发user promise
+
+### 版本二
+
+该版本实现
+
+```javascript
+function Promise(fn) {
+    var state = 'pending',
+        value = null,
+        callbacks = [];
+
+    this.then = function (onFulfilled, onRejected) {
+        return new Promise(function (resolve, reject) {
+            handle({
+                onFulfilled: onFulfilled || null,
+                onRejected: onRejected || null,
+                resolve: resolve,
+                reject: reject
+            });
+        });
+    };
+
+    function handle(callback) {
+        if (state === 'pending') {
+            callbacks.push(callback);
+            return;
+        }
+
+        var cb = state === 'fulfilled' ? callback.onFulfilled : callback.onRejected,
+            ret;
+        if (cb === null) {
+            cb = state === 'fulfilled' ? callback.resolve : callback.reject;
+            cb(value);
+            return;
+        }
+        ret = cb(value);
+        callback.resolve(ret);
+    }
+
+    function resolve(newValue) {
+        if (newValue && (typeof newValue === 'object' || typeof newValue === 'function')) {
+            var then = newValue.then;
+            if (typeof then === 'function') {
+                then.call(newValue, resolve, reject);
+                return;
+            }
+        }
+        state = 'fulfilled';
+        value = newValue;
+        execute();
+    }
+
+    function reject(reason) {
+        state = 'rejected';
+        value = reason;
+        execute();
+    }
+
+    function execute() {
+        setTimeout(function () {
+            callbacks.forEach(function (callback) {
+                handle(callback);
+            });
+        }, 0);
+    }
+
+    fn(resolve, reject);
+}
+```
 
 ### 参考资料
 
 [最简实现Promise，支持异步链式调用](https://juejin.cn/post/6844904094079926286)
+
+[30分钟，让你彻底明白Promise原理](https://zhuanlan.zhihu.com/p/42377418)
 
 ## 浮点数的计算
 由于JavaScript遵循二进制浮点数算术标准，无法正确计算如0.1+0.2这样的十进制小数加法，为解决这个问题可以使用parseFloat(0.1+0.2).toFixed(10),其中10表示精度函数提升
