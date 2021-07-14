@@ -432,11 +432,11 @@ new Promise((resolve) => {
 
 ```
 
-示例代码中```new Promise```返回的实例称为promise1，在promise1调用resolve1后触发```then```中的回调方法时，按照上文实现代码的定义返回的是promise2实例，resolve2执行后触发user promise
+示例代码中```new Promise```返回的实例称为promise1，promise1的```then```方法返回的实例为promise2。在promise1执行resolve1后触发```then```方法中定义在promise1的回调数据集cbs中的回调方法，该回调方法中执行```onResolved```方法——执行```console.log(res)```，并返回一个use promise实例；resolve2执行后触发user promise的```res.then(resolve)```方法中定义的回调方法，即promise2的```resolve```方法。promise2的resovle执行后触发对应的```then(console.log)```方法中```console.log(2)```
 
 ### 版本二
 
-该版本实现
+该版本添加状态机制，实现思路与版本一基本一致。
 
 ```javascript
 function Promise(fn) {
@@ -444,6 +444,7 @@ function Promise(fn) {
         value = null,
         callbacks = [];
 
+    //调用then方法时，即状态处于pending时，设置回调函数集
     this.then = function (onFulfilled, onRejected) {
         return new Promise(function (resolve, reject) {
             handle({
@@ -469,11 +470,12 @@ function Promise(fn) {
             return;
         }
         ret = cb(value);
+        //触发then方法中返回的promise的resolve方法
         callback.resolve(ret);
     }
 
     function resolve(newValue) {
-        if (newValue && (typeof newValue === 'object' || typeof newValue === 'function')) {
+        if (newValue && (typeof newValue === 'object' || typeof newValue === 'function')){
             var then = newValue.then;
             if (typeof then === 'function') {
                 then.call(newValue, resolve, reject);
@@ -482,6 +484,8 @@ function Promise(fn) {
         }
         state = 'fulfilled';
         value = newValue;
+        //resolve后执行then方法调用时定义的回调函数集合中的函数
+        //此时state为fulfilled
         execute();
     }
 
