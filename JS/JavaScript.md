@@ -516,12 +516,47 @@ function Promise(fn) {
 ## 浮点数的计算
 由于JavaScript遵循二进制浮点数算术标准，无法正确计算如0.1+0.2这样的十进制小数加法，为解决这个问题可以使用parseFloat(0.1+0.2).toFixed(10),其中10表示精度函数提升
 
-## 手动创建一个bind()
+## 手写一个bind
+
+### 版本一
+
 返回一个接受任意数量参数，通过 `...`rest操作符收集参数的函数。 在这个函数中，返回一个由 Function.prototype.apply 调用，context 作为上下文，args 作为参数数组的函数fn
 
 ```javascript
 const bind = (fn, context) => (...args) => fn.apply(context, args)
 ```
+
+## 手写一个call/apply
+
+### 版本一
+
+```javascript
+Function.prototype.call = function (context, ...args) {
+  const context = context || window;
+  context.fn = this;
+
+  const result = context.fn(...args);
+
+  delete context.fn
+  return result;
+}
+```
+
+```javascript
+Function.prototype.apply = function (context, args) {
+  const context = context || window;
+  context.fn = this;
+ 
+  const result = context.fn(...args);
+
+  delete context.fn
+  return result;
+}
+```
+
+### 参考资料
+
+[如何实现一个call/apply函数](http://47.98.159.95/my_blog/blogs/javascript/js-api/003.html)
 
 ## clone一个对象
 
