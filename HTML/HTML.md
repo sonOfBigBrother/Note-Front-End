@@ -58,15 +58,17 @@
 ## js脚本的引入
 下面介绍几种引入JavaScript脚本的方式，讨论每种方式的特点和差异，此处不讨论内联式脚本，与正常HTML解析流程一致。
 ### &lt;head&gt;中引入
-在head标签中引入脚本，不设置*defer*和*async*属性，当HTML解析器解析到script标签时，将会去获取js源码并执行代码，如下图所示： 
+在head标签中引入脚本，不设置*defer*和*async*属性，当HTML解析器解析到script标签时，将会去获取js源码并执行代码，此处加载和执行脚本会阻塞HTML的解析流程，如下图所示： 
 ![](https://i.imgur.com/gfHFVUV.png)
+
 ### &lt;body&gt;末端引入
 在body标签尾部中引入脚本，不设置*defer*和*async*属性，HTML解析不需要暂停，当解析完成后脚本加载完毕并执行，如下图所示：
 ![](https://i.imgur.com/lRLXSbc.png)
 ### 在head标签中引入且设置defer属性
 当页面在head标签中引入设置*defer*属性的脚本时，HTML页面解析的示意图如下：
 ![](https://i.imgur.com/vqC4Pw2.png)
-从图中可以看出，脚本时异步加载，当HTML解析完毕时执行。
+从图中可以看出，Javascript脚本是异步加载，当HTML解析完毕时执行。
+
 ### 在head标签中引入且设置async属性
 当页面在head标签中引入设置*async*属性的脚本时，HTML页面解析的示意图如下：
 ![](https://i.imgur.com/EAZL3oC.png)
@@ -74,11 +76,13 @@
 
 ### async VS defer
 
-- async方式加载的脚本会在下载完成后立刻解析并执行，而defer的脚本在HTML解析完成后执行。
-- defer的脚本按照在HTML文档中出现的位置按序加载，而async可能乱序。
-- 两者虽然不会阻塞HTML解析，但是可能会阻塞渲染。
+- ```async```方式加载的脚本会在**下载完成后立刻解析并执行**，故而会阻塞HTML解析；而```defer```的脚本在**HTML解析完成后执行**，故不会阻塞HTML解析。
+- ```defer```的脚本按照在HTML文档中出现的位置按序加载，而```async```可能乱序。
+- 两者可能会阻塞渲染。
 
-由于async的脚本可能会阻塞同步脚本（即HTML中普通加载的JS脚本），而同步脚本对于页面中的关键内容很重要，所以在async和defer间优选择defer  
-<b>参考资料</b>：  
-[Prefer DEFER Over ASYNC](https://calendar.perfplanet.com/2016/prefer-defer-over-async/)  
+由于async的脚本可能会阻塞同步脚本（即HTML中普通加载的JS脚本），而同步脚本对于页面中的关键内容很重要，所以在async和defer间优先选择defer  
+
+### 参考资料  
+
+[Prefer DEFER Over ASYNC](https://calendar.perfplanet.com/2016/prefer-defer-over-async/)  	
 [Efficiently load JavaScript with defer and async](https://flaviocopes.com/javascript-async-defer/)
