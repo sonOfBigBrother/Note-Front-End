@@ -16,6 +16,122 @@
 - Object
 - Function
 
+## 执行上下文
+
+### 可执行代码
+
+Javascript可执行代码类型主要有三种：
+
+- 全局代码
+- 函数代码
+- eval代码
+
+当Javascript引擎执行一段可执行代码时，会创建对应的执行上下文。
+
+执行上下文对象存在三个属性：
+
+- 变量对象（variable object）
+- 作用域链（scope chain）
+- this
+
+### 变量对象
+
+变量对象是与执行上下文相关的数据作用域，存储了在上下文中定义的变量和函数声明。
+
+主要介绍两种变量对象
+
+- 全局上下文变量对象：全局对象
+- 函数上下文变量对象：使用活动对象（Active Object）表示，只有到当进入一个执行上下文中，这个执行上下文的变量对象才会被激活。活动对象是在进入函数上下文时刻被创建的，它通过函数的 arguments 属性初始化。arguments 属性值是 Arguments 对象。
+
+### 执行上下文栈
+
+Javascript引擎用于管理执行上下文的数组结构
+
+### 执行过程
+
+执行上下文的代码会分成两个阶段进行处理：分析和执行，我们也可以叫做：
+
+1. 进入执行上下文
+2. 代码执行
+
+#### 进入执行上下文
+
+当进入执行上下文时，这时候还没有执行代码，
+
+变量对象会包括：
+
+1. 函数的所有形参 (如果是函数上下文)
+   - 由名称和对应值组成的一个变量对象的属性被创建
+   - 没有实参，属性值设为 undefined
+2. 函数声明
+   - 由名称和对应值（函数对象(function-object)）组成一个变量对象的属性被创建
+   - 如果变量对象已经存在相同名称的属性，则完全替换这个属性
+3. 变量声明
+   - 由名称和对应值（undefined）组成一个变量对象的属性被创建；
+   - 如果变量名称跟已经声明的形式参数或函数相同，则变量声明不会干扰已经存在的这类属性
+
+示例：
+
+```javascript
+function foo(a) {
+  var b = 2;
+  function c() {}
+  var d = function() {};
+
+  b = 3;
+
+}
+
+foo(1);
+```
+
+在进入执行上下文后，这时候的 AO 是：
+
+```javascript
+AO = {
+    arguments: {
+        0: 1,
+        length: 1
+    },
+    a: 1,
+    b: undefined,
+    c: reference to function c(){},
+    d: undefined
+}
+```
+
+#### 代码执行
+
+在代码执行阶段，会顺序执行代码，根据代码，修改变量对象的值。
+
+上例中的AO对象变化如下：
+
+```
+AO = {
+    arguments: {
+        0: 1,
+        length: 1
+    },
+    a: 1,
+    b: 3,
+    c: reference to function c(){},
+    d: reference to FunctionExpression "d"
+}
+```
+
+#### 总结
+
+1. 全局上下文的变量对象初始化是全局对象
+2. 函数上下文的变量对象初始化只包括 Arguments 对象
+3. 在进入执行上下文时会给变量对象添加形参、函数声明、变量声明等初始的属性值
+4. 在代码执行阶段，会再次修改变量对象的属性值
+
+### 参考资料
+
+【1】[JavaScript深入之执行上下文栈](https://github.com/mqyqingfeng/Blog/issues/4#)
+
+【2】[JavaScript深入之变量对象](https://github.com/mqyqingfeng/Blog/issues/5)
+
 ## 作用域与闭包
 
 ### 作用域
@@ -24,12 +140,51 @@
 
 作用域主要分成两种：
 
-  - 词法作用域：是定义在词法阶段的作用域，也就是由你在写代码时将变量和块作用域写在哪里决定的。Javascript就是基于词法作用域
+  - 词法作用域：是定义在词法阶段的作用域，也就是由你在写代码时将变量和块作用域写在哪里决定的。Javascript就是基于词法作用域。
   - 动态作用域：不关心函数和作用域是如何声明以及在何处声明，只关心它们从何处调用。Javascript并不使用动态作用域，但是this机制某种程度上很像动态作用域。
 
 ### 作用域链
 
-作用域链是指在查询某个变量时，引擎从当前的执行作用域向外层查找的一条路径。
+当查找变量的时候，会先从当前上下文的变量对象中查找，如果没有找到，就会从父级(词法层面上的父级)执行上下文的变量对象中查找，一直找到全局上下文的变量对象，也就是全局对象。这样由多个执行上下文的变量对象构成的链表就叫做作用域链。
+
+#### 函数创建
+
+函数的作用域在函数定义的时候就决定了，这是因为函数有一个内部属性``` [[scope]]```，当函数创建的时候，就会保存所有父变量对象到其中，可以理解为```[[scope]] ```就是所有父变量对象的层级链，但是注意：```[[scope]] ```并不代表完整的作用域链！
+
+举个例子：
+
+```javascript
+function foo() {
+    function bar() {
+        ...
+    }
+}
+```
+
+函数创建时，各自的```[[scope]]```为：
+
+```javascript
+foo.[[scope]] = [
+  globalContext.VO
+];
+
+bar.[[scope]] = [
+    fooContext.AO,
+    globalContext.VO
+];
+```
+
+#### 函数激活
+
+当函数激活时，进入函数上下文，创建 VO/AO 后，就会将活动对象添加到作用链的前端。
+
+这时候执行上下文的作用域链，我们命名为 Scope：
+
+```
+Scope = [AO].concat([[Scope]]);
+```
+
+至此，作用域链创建完毕。
 
 ### 闭包
 
@@ -46,6 +201,8 @@
 ### 参考资料
 
 【1】你不知道的JavaScript 上卷
+
+【2】[JavaScript深入之作用域链](https://github.com/mqyqingfeng/Blog/issues/6)
 
 ## 关于this
 
@@ -139,11 +296,11 @@ this // Window对象
 
 ### 参考资料
 
-[csdn博客](https://blog.csdn.net/rudy_zhou/article/details/105278657)
+【1】[csdn博客](https://blog.csdn.net/rudy_zhou/article/details/105278657)
 
-[so上的问答](https://stackoverflow.com/questions/28388530/why-does-chrome-debugger-think-closed-local-variable-is-undefined)
+【2】[so上的问答](https://stackoverflow.com/questions/28388530/why-does-chrome-debugger-think-closed-local-variable-is-undefined)
 
-[v8社区issue解答](https://bugs.chromium.org/p/v8/issues/detail?id=3491)
+【3】[v8社区issue解答](https://bugs.chromium.org/p/v8/issues/detail?id=3491)
 
 ## 原型与原型链
 
@@ -886,7 +1043,7 @@ typeof运算符返回字符串，因此该结果为“string”
 
 ### 无关键字
 
-在变量赋值之前没有关键字存在，要么赋值给一个不存在的全局变量，要么重新分配给已声明的变量。在非严格模式下，如果变量没有声明，它将赋值为全局对象（浏览器中的window）的一个属性。在严格模式下，它将抛出一个错误阻止不需要的全局变量被创建
+在变量赋值之前没有关键字存在，要么赋值给一个不存在的全局变量，要么重新分配给已声明的变量。在非严格模式下，如果变量没有声明，它将赋值为全局对象（浏览器中的window）的一个属性。在严格模式下，它将抛出一个错误，阻止不需要的全局变量被创建
 
 ### var 
 
@@ -896,7 +1053,7 @@ let在ES2015中引入，而且是新的变量声明推荐的方法，它之后�
 ### const 
 const在ES2015中引入，而且是新的变量声明推荐的方法，它之后不能被重新分配，即使对象是可变的（只要对象的引用不变就行）。它是块级作用域而且不能被重新分配。
 ### 暂时性死区
-只要块级作用域内存在let命令，它所声明的变量就“绑定”（binding）这个区域，不再受外部的影响。
+只要块级作用域内存在let或const命令，它所声明的变量就“绑定”（binding）这个区域，不再受外部的影响。
 
 ```javascript
 var tmp = 123;
