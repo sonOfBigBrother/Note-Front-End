@@ -518,8 +518,6 @@ this = GetBase(ref)，
 
 GetBase 也已经铺垫了，获得 base value 值，这个例子中就是foo，所以 this 的值就是 foo ，示例1的结果就是 2！
 
-唉呀妈呀，为了证明 this 指向foo，真是累死我了！但是知道了原理，剩下的就更快了。
-
 #### (foo.bar)()
 
 看示例2：
