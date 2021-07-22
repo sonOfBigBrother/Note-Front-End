@@ -492,7 +492,7 @@ foo2();
 
 根据之前的内容，我们知道该值为：
 
-```
+```javascript
 var Reference = {
   base: foo,
   name: 'bar',
@@ -1060,22 +1060,68 @@ const bind = (fn, context) => (...args) => fn.apply(context, args)
 
 ## 手写一个call/apply
 
-### 版本一
+### 版本一(ES6前)
 
 ```javascript
-Function.prototype.call = function (context, ...args) {
+// 第三版
+Function.prototype.call2 = function (context) {
+    var context = context || window;
+    context.fn = this;
+
+    var args = [];
+    //从1开始，省略context参数
+    for(var i = 1, len = arguments.length; i < len; i++) {
+        args.push('arguments[' + i + ']');
+    }
+	
+    //args自动执行toString()拼接参数列表，执行函数
+    var result = eval('context.fn(' + args +')');
+
+    delete context.fn
+    return result;
+}
+```
+
+```javascript
+Function.prototype.apply2 = function (context, arr) {
+    var context = context || window;
+    context.fn = this;
+
+    var result;
+    if (!arr) {
+        result = context.fn();
+    } else {
+        var args = [];
+        for (var i = 0, len = arr.length; i < len; i++) {
+            args.push('arr[' + i + ']');
+        }
+        result = eval('context.fn(' + args + ')')
+    }
+
+    delete context.fn
+    return result;
+}
+```
+
+### 版本二（ES6语法）
+
+```javascript
+Function.prototype.call2 = function (context, ...args) {
   const context = context || window;
+  //通过this获取调用call的函数
   context.fn = this;
 
+  //执行函数
   const result = context.fn(...args);
 
+  //删除函数  
   delete context.fn
   return result;
 }
 ```
 
 ```javascript
-Function.prototype.apply = function (context, args) {
+Function.prototype.apply2 = function (context, args) {
   const context = context || window;
   context.fn = this;
  
@@ -1088,7 +1134,9 @@ Function.prototype.apply = function (context, args) {
 
 ### 参考资料
 
-[如何实现一个call/apply函数](http://47.98.159.95/my_blog/blogs/javascript/js-api/003.html)
+【1】[JavaScript深入之call和apply的模拟实现](https://github.com/mqyqingfeng/Blog/issues/11#)
+
+【2】[如何实现一个call/apply函数](http://47.98.159.95/my_blog/blogs/javascript/js-api/003.html)
 
 ## clone一个对象
 
