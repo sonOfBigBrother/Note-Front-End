@@ -1058,6 +1058,38 @@ function Promise(fn) {
 const bind = (fn, context) => (...args) => fn.apply(context, args)
 ```
 
+### 版本二
+
+```javascript
+Function.prototype.bind2 = function (context) {
+    if (typeof this !== "function") {
+      throw new Error("Function.prototype.bind - what is trying to be bound is not callable");
+    }
+    var self = this;
+    // 获取bind2函数从第二个参数到最后一个参数
+    var args = Array.prototype.slice.call(arguments, 1);
+
+    //中转函数，防止修改绑定函数的原型
+    var fNOP = function () {};
+
+    var fBound = function () {
+        
+        var bindArgs = Array.prototype.slice.call(arguments);
+    	 // 当作为构造函数时，this指向实例，此时结果为true，将绑定函数的this指向该实例，可以让实例获得来自绑定函数的值
+        // 当作为普通函数时，this指向 window，此时结果为 false，将绑定函数的 this 指向 context
+        return self.apply(this instanceof fNOP ? this : context, args.concat(bindArgs));
+    }
+    //修改中转函数的prototype为绑定函数的prototype，返回的函数prototype为中转构造函数实例，实现原型链
+    fNOP.prototype = this.prototype;
+    fBound.prototype = new fNOP();
+    return fBound;
+}
+```
+
+### 参考资料
+
+【1】[JavaScript深入之bind的模拟实现](https://github.com/mqyqingfeng/Blog/issues/12#)
+
 ## 手写一个call/apply
 
 ### 版本一(ES6前)
@@ -1438,6 +1470,16 @@ person.birthday() // person.age === 51
 
 ### Object.create()
 Object.create(proto, [propertiesObject]),其中proto指新建对象的原型对象，propertiesObject是可选参数，若不为<i>undefined</i>，则是添加到新对象的可枚举属性。
+
+模拟实现Object.create()：
+
+```javascript
+Object.create = function( o ) {
+    function f(){}
+    f.prototype = o;
+    return new f;
+};
+```
 
 ### 寄生构造函数
 
