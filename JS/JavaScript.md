@@ -846,6 +846,131 @@ funciton deepClone() {
 };
 ```
 
+## 类数组对象和arguments
+
+### 类数组对象
+
+拥有一个 length 属性和若干索引属性的对象
+
+### 类数组对象调用数组方法
+
+可以用 Function.call 间接调用：
+
+```js
+var arrayLike = {0: 'name', 1: 'age', 2: 'sex', length: 3 }
+
+Array.prototype.join.call(arrayLike, '&'); // name&age&sex
+
+Array.prototype.slice.call(arrayLike, 0); // ["name", "age", "sex"] 
+// slice可以做到类数组转数组
+
+Array.prototype.map.call(arrayLike, function(item){
+    return item.toUpperCase();
+}); 
+// ["NAME", "AGE", "SEX"]
+
+```
+
+### 类数组转数组
+
+```js
+var arrayLike = {0: 'name', 1: 'age', 2: 'sex', length: 3 }
+// 1. slice
+Array.prototype.slice.call(arrayLike); // ["name", "age", "sex"] 
+// 2. splice
+Array.prototype.splice.call(arrayLike, 0); // ["name", "age", "sex"] 
+// 3. ES6 Array.from
+Array.from(arrayLike); // ["name", "age", "sex"] 
+// 4. apply
+Array.prototype.concat.apply([], arrayLike)
+```
+
+### Arguments对象
+
+Arguments 对象只定义在函数体中，包括了函数的参数和其他属性。在函数体中，arguments 指代该函数的 Arguments 对象
+
+#### length属性
+
+Arguments对象的length属性，表示实参的长度。
+
+```js
+function foo(b, c, d){
+    console.log("实参的长度为：" + arguments.length)
+}
+
+console.log("形参的长度为：" + foo.length)
+
+foo(1)
+
+// 形参的长度为：3
+// 实参的长度为：1
+```
+
+#### callee属性
+
+Arguments 对象的 callee 属性，通过它可以调用函数自身。
+
+讲个闭包经典面试题使用 callee 的解决方法：
+
+```js
+var data = [];
+
+for (var i = 0; i < 3; i++) {
+    (data[i] = function () {
+       console.log(arguments.callee.i) 
+    }).i = i;
+}
+
+data[0]();
+data[1]();
+data[2]();
+
+// 0
+// 1
+// 2
+```
+
+#### arguments 和对应参数的绑定
+
+```
+function foo(name, age, sex, hobbit) {
+
+    console.log(name, arguments[0]); // name name
+
+    // 改变形参
+    name = 'new name';
+
+    console.log(name, arguments[0]); // new name new name
+
+    // 改变arguments
+    arguments[1] = 'new age';
+
+    console.log(age, arguments[1]); // new age new age
+
+    // 测试未传入的是否会绑定
+    console.log(sex); // undefined
+
+    sex = 'new sex';
+
+    console.log(sex, arguments[2]); // new sex undefined
+
+    arguments[3] = 'new hobbit';
+
+    console.log(hobbit, arguments[3]); // undefined new hobbit
+
+}
+
+foo('name', 'age')
+```
+
+传入的参数，实参和arguments的值会共享，当没有传入时，实参与arguments值不会共享
+
+除此之外，以上是在非严格模式下，如果是在严格模式下，实参和arguments是不会共享的。
+
+### 参考资料
+
+【1】[JavaScript深入之类数组对象与arguments](https://github.com/mqyqingfeng/Blog/issues/14#)
+
 ## 箭头函数和普通函数的区别
 
 
@@ -1202,8 +1327,8 @@ function objectFactory() {
     obj.__proto__ = constructor.prototype;
 
     var ret = Constructor.apply(obj, arguments);
-    //添加ret为null的情况
-    return typeof ret === 'object' ? ret || obj : obj;
+    
+    return ret instanceof Object ? ret : obj;
 
 };
 ```
