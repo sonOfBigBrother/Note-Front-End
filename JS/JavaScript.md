@@ -1170,6 +1170,56 @@ Function.prototype.apply2 = function (context, args) {
 
 【2】[如何实现一个call/apply函数](http://47.98.159.95/my_blog/blogs/javascript/js-api/003.html)
 
+## new运算符实现
+
+先来了解new操作符背后实现的逻辑：  
+
+1.  创建一个空的简单JavaScript对象，即{}  
+2.  链接该对象（设置该对象的构造函数）到另一个对象  
+3.  该对象绑定到函数调用的***this***
+4.  若函数没有返回其他对象，返回这个新对象
+
+### 版本一
+
+```javascript
+function create(Con, ...args) {
+  let obj = {}
+  Object.setPrototypeOf(obj, Con.prototype)
+  let result = Con.apply(obj, args)
+  return result instanceof Object ? result : obj
+}
+```
+
+### 版本二
+
+```js
+function objectFactory() {
+
+    var obj = new Object();
+
+    var constructor = [].shift.call(arguments);
+
+    obj.__proto__ = constructor.prototype;
+
+    var ret = Constructor.apply(obj, arguments);
+    //添加ret为null的情况
+    return typeof ret === 'object' ? ret || obj : obj;
+
+};
+```
+
+函数定义说明：
+
+1. 用new Object() 的方式新建了一个对象obj。
+2. 取出第一个参数，就是我们要传入的构造函数。此外因为shift函数会修改原数组，所以arguments会被去除第一个参数。
+3. 将obj的原型指向构造函数的原型，这样obj就可以访问到构造函数原型中的属性。
+4. 使用apply，改变构造函数this的指向到新建的对象，获取构造函数执行返回的结果。
+5. 判断返回的值是不是一个对象，如果是一个对象，我们就返回这个对象；否则返回obj。
+
+### 参考资料
+
+【1】[JavaScript深入之new的模拟实现](https://github.com/mqyqingfeng/Blog/issues/13#)
+
 ## clone一个对象
 
 - 使用对象扩展操作符 `...`，对象的可枚举属性可以被拷贝到新对象。
@@ -1474,7 +1524,7 @@ Object.create(proto, [propertiesObject]),其中proto指新建对象的原型对�
 模拟实现Object.create()：
 
 ```javascript
-Object.create = function( o ) {
+Object.create = function(o) {
     function f(){}
     f.prototype = o;
     return new f;
@@ -1570,23 +1620,6 @@ const memoize = fn => {
 - 防止意外的全局变量
 - 修复了一些导致 JavaScript引擎难以执行优化的缺陷——有时候，相同的代码，严格模式可以比非严格模式下运行得更快。
 - 使得JavaScript更安全
-
-## new运算符的自定义
-先来了解new操作符背后实现的逻辑：  
-
-1.  创建一个空的简单JavaScript对象，即{}  
-2.  链接该对象（设置该对象的构造函数）到另一个对象  
-3.  该对象绑定到函数调用的***this***
-4.  若函数没有返回其他对象，返回这个新对象
-
-```javascript
-function create(Con, ...args) {
-  let obj = {}
-  Object.setPrototypeOf(obj, Con.prototype)
-  let result = Con.apply(obj, args)
-  return result instanceof Object ? result : obj
-}
-```
 
 ## 防抖与节流
 ### 应用场景
