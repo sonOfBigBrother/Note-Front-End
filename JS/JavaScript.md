@@ -818,7 +818,83 @@ SubType.prototype.sayAge = function(){
 	console.log(this.age);
 }
 ```
+## 创建对象
+
+- 对象字面量
+- 构造函数模式
+- 工厂模式
+- Object.create()
+- 寄生构造函数  
+
+### 对象字面量
+
+对象字面量常用来存储一次性数据
+
+### 构造函数模式
+
+经常用于创建一个对象的多个实例，而且每个实例彼此互不影响，必须使用new操作符调用构造器，否则全局对象会被污染/改变
+
+```javascript
+function Person(name, age) {
+  this.name = name
+  this.age = age
+}
+Person.prototype.birthday = function() {
+  this.age++
+}
+const person1 = new Person("John", 50)
+const person2 = new Person("Sally", 20)
+person1.birthday() // person1.age === 51
+person2.birthday() // person2.age === 21
+```
+
+### 工厂模式
+
+创建一个和构造函数相似的对象，但是可以通过闭包存储私有数据。在调用函数或使用this关键字之前不需要使用 new 操作符。工厂函数通常放弃了原型概念，并且将所有属性和方法保持在对象上
+
+```	javascript
+const createPerson = (name, age) => {
+  const birthday = () => person.age++
+  const person = { name, age, birthday }
+  return person
+}
+const person = createPerson("John", 50)
+person.birthday() // person.age === 51
+```
+
+### Object.create()
+
+Object.create(proto, [propertiesObject]),其中proto指新建对象的原型对象，propertiesObject是可选参数，若不为<i>undefined</i>，则是添加到新对象的可枚举属性。
+
+模拟实现Object.create()：
+
+```javascript
+Object.create = function(o) {
+    function f(){}
+    f.prototype = o;
+    return new f;
+};
+```
+
+### 寄生构造函数
+
+思路是创建一个函数，该函数用于封装创建对象的代码，返回新创建的对象。
+
+```javascript
+function Person(name,age,job){
+	const o = new Object();
+	o.name = name;
+	o.age = age;
+	o.job = job;
+	o.sayName = () => cosole.log(name);
+	return o;
+}
+```
+
+## 
+
 ## 浅拷贝和深拷贝
+
 ### 浅拷贝
 
 对象的第一层拷贝到一个新对象上
@@ -1602,74 +1678,6 @@ null == undefined和null !== undefined都为真
 <a href="https://codeburst.io/javascript-whats-the-difference-between-null-undefined-37793b5bfce6">javascript-whats-the-difference-between-null-undefined</a>
 
 [The history of “typeof null”](https://2ality.com/2013/10/typeof-null.html)
-
-## 创建对象
-
-- 对象字面量
-- 构造函数模式
-- 工厂模式
-- Object.create()
-- 寄生构造函数  
-
-### 对象字面量
-对象字面量常用来存储一次性数据
-### 构造函数模式
-经常用于创建一个对象的多个实例，而且每个实例彼此互不影响，必须使用new操作符调用构造器，否则全局对象会被污染/改变
-
-```javascript
-function Person(name, age) {
-  this.name = name
-  this.age = age
-}
-Person.prototype.birthday = function() {
-  this.age++
-}
-const person1 = new Person("John", 50)
-const person2 = new Person("Sally", 20)
-person1.birthday() // person1.age === 51
-person2.birthday() // person2.age === 21
-```
-
-### 工厂模式
-创建一个和构造函数相似的对象，但是可以通过闭包存储私有数据。在调用函数或使用this关键字之前不需要使用 new 操作符。工厂函数通常放弃了原型概念，并且将所有属性和方法保持在对象上
-
-```	javascript
-const createPerson = (name, age) => {
-  const birthday = () => person.age++
-  const person = { name, age, birthday }
-  return person
-}
-const person = createPerson("John", 50)
-person.birthday() // person.age === 51
-```
-
-### Object.create()
-Object.create(proto, [propertiesObject]),其中proto指新建对象的原型对象，propertiesObject是可选参数，若不为<i>undefined</i>，则是添加到新对象的可枚举属性。
-
-模拟实现Object.create()：
-
-```javascript
-Object.create = function(o) {
-    function f(){}
-    f.prototype = o;
-    return new f;
-};
-```
-
-### 寄生构造函数
-
-思路是创建一个函数，该函数用于封装创建对象的代码，返回新创建的对象。
-
-```javascript
-function Person(name,age,job){
-	const o = new Object();
-	o.name = name;
-	o.age = age;
-	o.job = job;
-	o.sayName = () => cosole.log(name);
-	return o;
-}
-```
 
 ## typeof typeof 0的输出结果
 
