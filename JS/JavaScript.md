@@ -1055,7 +1055,68 @@ foo('name', 'age')
 
 柯里化函数是指把接受多个参数的函数变换成接受一个单一参数（初始函数的第一个参数）的函数。
 
+创建一个辅助函数 `curry(f)`，该函数将对拥有两个参数的函数 `f` 执行柯里化。换句话说，对于两个参数的函数 `f(a, b)` 执行 `curry(f)` 会将其转换为以 `f(a)(b)` 形式运行的函数：
 
+```js
+function curry(f) { // curry(f) 执行柯里化转换
+  return function(a) {
+    return function(b) {
+      return f(a, b);
+    };
+  };
+}
+
+// 用法
+function sum(a, b) {
+  return a + b;
+}
+
+let curriedSum = curry(sum);
+
+alert( curriedSum(1)(2) ); // 3
+```
+
+### 高级版
+
+```js
+function curry(func) {
+  // 1.柯里化返回的顶层处理函数
+  return function curried(...args) {
+    //2.如果传入的 args 长度与原始函数所定义的（func.length）相同或者更长，那么只需要将调用传递给它即可
+    if (args.length >= func.length) {
+      return func.apply(this, args);
+    } else {
+      //3.否则，返回一个匿名函数包装器，重新执行curried顶层函数，再次从1开始执行
+      return function(...args2) {
+        return curried.apply(this, args.concat(args2));
+      }
+    }
+  };
+
+}
+```
+
+用例：
+
+```js
+function sum(a, b, c) {
+  return a + b + c;
+}
+
+let curriedSum = curry(sum);
+
+alert( curriedSum(1, 2, 3) ); // 6，仍然可以被正常调用
+alert( curriedSum(1)(2,3) ); // 6，对第一个参数的柯里化
+alert( curriedSum(1)(2)(3) ); //
+```
+
+### 总结
+
+**柯里化** 是一种转换，将 `f(a,b,c)` 转换为可以被以 `f(a)(b)(c)` 的形式进行调用。JavaScript 实现通常都保持该函数可以被正常调用，并且如果参数数量不足，则返回偏函数。
+
+### 参考资料
+
+【1】[Currying](https://zh.javascript.info/currying-partials)
 
 ## ==和===相等运算符的区别
 
