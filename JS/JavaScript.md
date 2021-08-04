@@ -891,8 +891,6 @@ function Person(name,age,job){
 }
 ```
 
-## 
-
 ## 浅拷贝和深拷贝
 
 ### 浅拷贝
@@ -1053,7 +1051,7 @@ foo('name', 'age')
 
 ## 柯里化
 
-**柯里化**函数是指把接受多个参数的函数变换成接受一个单一参数（初始函数的第一个参数）的函数。
+**柯里化**是种把接受多个参数的函数变换成一系列只接受单一参数的函数的技术。
 
 创建一个辅助函数 `curry(f)`，该函数将对拥有两个参数的函数 `f` 执行柯里化。换句话说，对于两个参数的函数 `f(a, b)` 执行 `curry(f)` 会将其转换为以 `f(a)(b)` 形式运行的函数：
 
@@ -1073,8 +1071,14 @@ function sum(a, b) {
 
 let curriedSum = curry(sum);
 
-alert( curriedSum(1)(2) ); // 3
+alert( curriedSum(1)(2)); // 3
 ```
+
+### 作用
+
+- 参数复用
+- 提前返回
+- 延迟计算/运行
 
 ### 高级版
 
@@ -1126,7 +1130,9 @@ var curry = fn =>
 
 ### 参考资料
 
-【1】[Currying](https://zh.javascript.info/currying-partials)
+【1】[Currying Wiki](https://en.wikipedia.org/wiki/Currying)
+
+【2】[Currying](https://zh.javascript.info/currying-partials)
 
 ## ==和===相等运算符的区别
 
