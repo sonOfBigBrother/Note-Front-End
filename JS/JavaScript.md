@@ -1848,7 +1848,7 @@ const memoize = fn => {
 
 ```javascript
 let timer;
-window.onscroll  = function () {
+window.onscroll = function () {
     if(timer){
         clearTimeout(timer)
     }
@@ -1860,11 +1860,50 @@ window.onscroll  = function () {
     },200)
 }
 ```
-效果如下，滚动结束时触发事件： 
+效果如下，***滚动结束时触发事件***： 
 
 ![](https://images2017.cnblogs.com/blog/632130/201712/632130-20171205143240534-931062718.gif)  
 
+#### 通用防抖函数
+
+相较于上述案例，通用防抖函数添加一个回调函数、tiemout时长和是否立即执行布尔值作为参数。
+
+```js
+function debounce(func, wait, immediate) {
+  var timeout, result;
+
+  var debounced = function () {
+    var context = this;
+    var args = arguments;
+
+    if (timeout) clearTimeout(timeout);
+    if (immediate) {
+      // 如果已经执行过，不再执行
+      var callNow = !timeout;
+      timeout = setTimeout(function () {
+        timeout = null;
+      }, wait);
+      if (callNow) result = func.apply(context, args);
+    } else {
+      timeout = setTimeout(function () {
+        func.apply(context, args);
+      }, wait);
+    }
+    return result;
+  };
+
+  //支持取消防抖
+  debounced.cancel = function () {
+    clearTimeout(timeout);
+    timeout = null;
+  };
+
+  return debounced;
+}
+```
+
 ### 节流（throttle）
+
 节流是指触发函数事件后，短时间间隔内无法连续调用，只有上一次函数执行后，过了规定的时间间隔，才能进行下一次的函数调用。
 实现原理：对处理函数进行延时操作，若设定的延时到来之前，再次触发事件，则清除上一次的延时操作定时器，重新定时。
 示例代码如下：
@@ -1888,7 +1927,7 @@ window.onscroll = function throttle(){
 }
 ```
 
-效果如下所示，每隔500毫秒触发一次事件
+效果如下所示，***每隔500毫秒触发一次事件***
 ![](https://images2017.cnblogs.com/blog/632130/201712/632130-20171205173245597-704143487.gif)
 
 ### 总结
