@@ -1877,9 +1877,11 @@ function debounce(func, wait, immediate) {
     var args = arguments;
 
     if (timeout) clearTimeout(timeout);
+    //允许立即执行
     if (immediate) {
       // 如果已经执行过，不再执行
       var callNow = !timeout;
+      // wait对应时间间隔内，callNow一直为false，不会触发func；经过wait时长后置空timeout，再次执行时callNow为true
       timeout = setTimeout(function () {
         timeout = null;
       }, wait);
