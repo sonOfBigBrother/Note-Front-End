@@ -286,5 +286,89 @@ z-index可以设置成三个值：
 
 ### 深入display:none
 
-为元素设置```display:none```后，界面不显示该元素，且不占布局空间，但仍可以通过JavaScript操作该元素。
+为元素设置```display:none```后，界面不显示该元素，且不占布局空间，但仍可以通过JavaScript操作该元素。出现这种现象的原因是：浏览器会解析HTML标签生成DOM Tree，解析CSS生成CSSOM，然后将DOM Tree和CSSOM合成生成Render Tree，元素在Render Tree中对应0或多个盒子，然后浏览器以盒子模型的信息布局和渲染界面。设置```display:none```的元素在Render Tree中没有生成对应的盒子模型，因此后续的布局、渲染工作自然没它什么事了，至于DOM操作还是可以的。
+
+#### 特点
+
+- 存在默认设置```display:none```样式的元素，如link、script、style、dialog和input[type=hidden]。
+- HTML5中新增hidden布尔属性，让开发者自定义元素的隐藏性
+- 父元素设置为```display:none```时该属性会侵入到其下所有后代元素中。
+- 无法获取焦点
+- 无法响应任何事件，无论是捕获、命中目标和冒泡阶段均不可以。
+- 不影响form表单提交数据
+- CSS的counter属性会忽略```display:none```的元素
+
+ ```html
+ .start{
+   counter-reset: son 0;
+ }
+ .son{
+   counter-increment: son 1;
+ }
+ .son::before{
+   content: counter(son) ". ";
+ }
+ 
+ <div class="start">
+   <div class="son">son1</div>
+   <div class="son" style="display:none">son2</div>
+   <div class="son">son3</div>
+ </div>
+ <!-- result -->
+ <!-- 1. son1-->
+ <!-- 2. son3-->
+ ```
+
+- 使transition失效
+- display变化时将触发reflow
+
+### 深入visibility
+
+#### 作用
+
+- 用于隐藏表格的行和列
+- 用于在不触发布局的情况下隐藏元素
+
+#### 有效值
+
+- visible
+- hidden：元素不可见，但保留原来占有的位置
+- collapse：用于表格子元素时与```display:none```效果一致；用于其他元素时与```visibility:hidden```相同
+- inherit
+
+#### 特点
+
+- 父元素为`visibility:hidden`，子元素可为`visibility:visible`且有效。
+- 无法获取焦点。
+- 可在冒泡阶段响应事件——将鼠标移至`.visible`时，`.hidden`会响应`hover`事件显示
+
+```
+div{
+  border: solid 2px blue;
+}
+.visible{
+  visibility: visible;
+}
+.hidden{
+  visibility: hidden;
+}
+.hidden:hover{
+  visibility: visible;
+}
+<div class="hidden">
+  I'm Parent.
+  <div class="visible">
+    I'm Son.
+  </div>
+</div>
+```
+
+- 不影响form表单提交数据
+- CSS中的counter不会忽略
+- Transition对`visibility`的变化有效
+- visibility变化不会触发reflow——从visible设置为hidden时，不会改变元素布局相关的属性，因此不会触发reflow
+
+### 参考资料
+
+【1】[CSS魔法堂：display:none与visibility:hidden的恩怨情仇](https://juejin.cn/post/6844903686313869320)
 
