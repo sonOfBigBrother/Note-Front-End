@@ -1932,8 +1932,65 @@ window.onscroll = function throttle(){
 效果如下所示，***每隔500毫秒触发一次事件***
 ![](https://images2017.cnblogs.com/blog/632130/201712/632130-20171205173245597-704143487.gif)
 
+#### 通用节流函数
+
+用 leading 代表首次是否执行，trailing 代表结束后是否再执行一次。
+
+```js
+function throttle(func, wait, options) {
+  var timeout, context, args, result;
+  var previous = 0;
+  if (!options) options = {};
+
+  var later = function () {
+    previous = options.leading === false ? 0 : new Date().getTime();
+    timeout = null;
+    result = func.apply(context, args);
+    if (!timeout) context = args = null;
+  };
+
+  var throttled = function () {
+    var now = new Date().getTime();
+    if (!previous && options.leading === false) previous = now;
+    //下次触发func的剩余时间
+    var remaining = wait - (now - previous);
+    context = this;
+    args = arguments;
+    // 如果没有剩余的时间了或者修改了系统时间
+    if (remaining <= 0 || remaining > wait) { 
+      if (timeout) {
+        clearTimeout(timeout);
+        timeout = null;
+      }
+      previous = now;
+      result = func.apply(context, args);
+      if (!timeout) context = args = null;
+    } else if (!timeout && options.trailing !== false) {
+      timeout = setTimeout(later, remaining);
+    }
+  };
+
+  throttled.cancel = function () {
+    clearTimeout(timeout);
+    previous = 0;
+    timeout = null;
+  };
+
+  return throttled;
+}
+```
+
 ### 总结
+
 防抖是将**多次执行变为最后一次执行**，节流是**将多次执行变为每隔一段时间执行**
+
+### 参考资料
+
+【1】[JavaScript专题之跟着underscore学防抖](https://github.com/mqyqingfeng/Blog/issues/22)
+
+【2】[JavaScript专题之跟着 underscore 学节流](https://github.com/mqyqingfeng/Blog/issues/26)
+
+【3】[underscore throttle的源码](https://github.com/jashkenas/underscore/blob/master/modules/throttle.js)
 
 ## NaN不等于自身
 
