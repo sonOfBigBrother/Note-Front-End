@@ -1,14 +1,7 @@
-# CSS核心知识点
+[toc]
 
-- 选择器选择规则
-- 继承
-- 盒模型
-- 块级格式化上下文（BFC）
-- 层叠上下文
-- link和@import的区别
-
----
 ## 选择器的选择规则
+
 ### 重要性(Importance)
 重要性按序号依次加强：  
 
@@ -106,7 +99,7 @@ Web页面可视化CSS渲染的一部分，布局过程中生成<strong>块级盒
 ### 应用
 
 - 阻止margin重叠(margin collapsing)  
-margin collapsing的三种基本情况：  
+	margin collapsing的三种基本情况：  
 	
 	- 相邻元素间（除非后一个元素需要清除之前的浮动）  
 	- 父元素与第一个子元素或最后一个子元素：父子元素间不存在分开margin-top/margin-bottom的边框、内边距和内容等  
@@ -288,3 +281,10 @@ z-index可以设置成三个值：
     margin:auto 0;
 }
 ```
+
+## visibility:hidden和display:none比较
+
+### 深入display:none
+
+为元素设置```display:none```后，界面不显示该元素，且不占布局空间，但仍可以通过JavaScript操作该元素。
+
