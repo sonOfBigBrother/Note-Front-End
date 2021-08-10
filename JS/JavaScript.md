@@ -1609,7 +1609,7 @@ DOM2级事件规定的事件流包含三个阶段：
 
 ### includes()和indexOf()的区别
 
-includes函数是在ES2016中定义的新方法，两者都可以用来判断数组中某个元素是否存在， 区别在于*indexOf* 函数返回指定元素的***第一个***索引值——不存在则返回-1，而且***不识别NaN***；includes函数返回布尔值，可以识别NaN
+includes函数是在ES2016中定义的新方法，两者都可以用来判断数组中某个元素是否存在， 区别在于*indexOf* 函数返回指定元素的***第一个***索引值——不存在则返回-1，而且***不识别NaN***；includes函数返回***布尔值***，可以***识别NaN***
 
 ```javascript
 const arr = [1, 2, 3, 4, NaN];
@@ -1625,7 +1625,117 @@ arr.indexOf(NaN) // -1
 arr.includes(NaN) // true
 ```
 
+### 数组去重
+
+#### 使用indexOf
+
+```js
+const array = [1, 1, '1'];
+
+function unique(array) {
+    const res = [];
+    for (let i = 0, len = array.length; i < len; i++) {
+        const current = array[i];
+        //结果集中插入不存在的元素
+        if (res.indexOf(current) === -1) {
+            res.push(current)
+        }
+    }
+    return res;
+}
+
+console.log(unique(array));
+```
+
+#### 排序后去重
+
+```js
+const array = [1, 1, '1'];
+
+function unique(array) {
+    const res = [];
+    const sortedArray = array.concat().sort();
+    let seen;
+    for (let i = 0, len = sortedArray.length; i < len; i++) {
+        // 如果是第一个元素或者相邻的元素不相同
+        if (!i || seen !== sortedArray[i]) {
+            res.push(sortedArray[i])
+        }
+        seen = sortedArray[i];
+    }
+    return res;
+}
+
+console.log(unique(array));
+```
+
+#### fitler方法
+
+使用Array的filter方法改写以上两种去重方式
+
+```js
+const array = [1, 2, 1, 1, '1'];
+
+function unique(array) {
+    return array.filter((item, index, array) => {
+        return array.indexOf(item) === index;
+    })
+}
+
+console.log(unique(array));
+```
+
+```js
+const array = [1, 2, 1, 1, '1'];
+
+function unique(array) {
+    return array.concat().sort().filter((item, index, array) => {
+        return !index || item !== array[index - 1]
+    })
+}
+
+console.log(unique(array));
+```
+
+#### Object键值对
+
+```js
+const array = [{value: 1}, {value: 1}, {value: 2}];
+
+function unique(array) {
+    let obj = {};
+    return array.filter((item, index, array) => {
+        console.log(typeof item + JSON.stringify(item))
+        return obj.hasOwnProperty(typeof item + JSON.stringify(item)) ? false : (obj[typeof item + JSON.stringify(item)] = true)
+    })
+}
+
+console.log(unique(array)); // [{value: 1}, {value: 2}]
+```
+
+#### ES 6的map和set
+
+使用Set结构
+
+```js
+const unique = (a) => [...new Set(a)]
+```
+
+使用Map结构
+
+```js
+function unique (arr) {
+    const seen = new Map()
+    return arr.filter((a) => !seen.has(a) && seen.set(a, 1))
+}
+```
+
+#### 参考资料
+
+【1】[JavaScript专题之数组去重](https://github.com/mqyqingfeng/Blog/issues/27#)
+
 ## undefined vs ReferenceError
+
 先比较下undefined和ReferenceError，JavaScript中声明但未初始化的变量或是typeof未声明的变量将会赋予*undefined*值,，而尝试访问一个为未声明的变量时会抛出ReferenceError。
 
 ```javascript
