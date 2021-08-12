@@ -86,3 +86,100 @@
 
 [Prefer DEFER Over ASYNC](https://calendar.perfplanet.com/2016/prefer-defer-over-async/)  	
 [Efficiently load JavaScript with defer and async](https://flaviocopes.com/javascript-async-defer/)
+
+## preload和prefetch
+
+### preload
+
+preload一种预加载资源的方式，它通过声明向浏览器声明一个需要提交加载的资源，当资源真正被使用的时候立即执行，就无需等待网络的消耗。
+
+它可以通过 `link` 标签进行创建：
+
+```
+<!-- 使用 link 标签静态标记需要预加载的资源 -->
+<link rel="preload" href="/path/to/style.css" as="style">
+
+<!-- 或使用脚本动态创建一个 link 标签后插入到 head 头部 -->
+<script>
+const link = document.createElement('link');
+link.rel = 'preload';
+link.as = 'style';
+link.href = '/path/to/style.css';
+document.head.appendChild(link);
+</script>
+```
+
+当浏览器解析到这行代码就会去加载 `href` 中对应的资源但不执行，待到真正使用到的时候再执行；另一种方式方式就是在 HTTP 响应头中加上 `preload` 字段：
+
+```
+Link: <https://example.com/other/styles.css>; rel=preload; as=style
+```
+
+这种方式比通过 `link` 方式加载资源方式更快，在返回请求结果且还没到解析页面的时候就已经开始预加载资源了。
+
+讲完 `preload `的用法再来看下它的浏览器兼容性，根据 [caniuse](https://caniuse.com/?search=preload)上的介绍：该API的兼容性覆盖率达到 93.37%（文档编写时）。
+
+![preload](pic/preload-can-i-use.png)
+
+### prefetch
+
+`prefetch` 跟 `preload` 不同，它的作用是告诉浏览器未来可能会使用到的某个资源，浏览器就会在闲暇时去加载对应的资源，若能预测到用户的行为，比如懒加载，点击到其它页面则相当于提前加载了需要的资源。它的用法跟 `preload`是一样的：
+
+```
+<!-- link 模式 -->
+<link rel="prefetch" href="/path/to/style.css" as="style">
+
+<!-- HTTP 响应头模式 -->
+Link: <https://example.com/other/styles.css>; rel=prefetch; as=style
+```
+
+讲完用法再讲浏览器兼容性，根据[caniuse]()上的说明，文档编写时prefetch覆盖率可以达到将近 80.21%。
+
+![](pic/prefetch-can-i-use.png)
+
+### 更多细节点
+
+当一个资源被`preload`或者`prefetch`获取后，它将在内存缓存中等待被使用，如果资源存在有效的缓存机制（如 cache-control 或 max-age），那么它将被存储在 HTTP 缓存中供不同页面使用。
+
+正确使用 preload/prefetch 不会造成二次下载，也就说：**当页面上使用到这个资源时候preload资源还没下载完，这时候不会造成二次下载，会等待第一次下载并执行脚本**。
+
+对于`preload`来说，一旦页面关闭了，它就会立即停止`preload`获取资源；而对于`prefetch`资源，即使页面关闭，`prefetch`发起的请求仍会进行不会中断。
+
+### 什么情况会导致二次获取？
+
+- 不要将`preload`和`prefetch`进行混用，它们分别适用于不同的场景，对于同一个资源同时使用`preload`和`prefetch`会造成二次的下载。
+
+- `preload`字体不带`crossorigin`也将会二次获取！确保对`preload`的字体添加`crossorigin`属性，否则会被下载两次，这个请求使用匿名的跨域模式。这个建议既适用于字体文件在相同域名下，也适用于从其他域名获取(比如说默认的异步获取)。
+
+### 小结
+
+`preload`是告诉浏览器页面***必定需要***的资源，浏览器一定会加载这些资源，`prefetch` 是告诉浏览器页面***可能需要***的资源，浏览器不一定会加载这些资源。所以建议：对于当前页面很有必要的资源使用 `preload`，对于可能在将来的页面中使用的资源使用 `prefetch`。
+
+### 这将会浪费用户的带宽吗？
+
+用`preload` 和 `prefetch`情况下，如果资源不能被缓存，那么都有可能浪费一部分带宽，在移动端请慎用。
+
+没有用到的 preload 资源在 Chrome 的console里会在 `onload` 事件 3s 后发生警告。
+
+[![img](https://camo.githubusercontent.com/d0cebaa34bfe98baf7044e1143bc2ff0ce7c1c112caaa30e245a33751c921f6d/68747470733a2f2f696d672e616c6963646e2e636f6d2f7466732f54423149384f416e6b766f4b31526a535a467758586369434658612d313030302d3238352e706e67)](https://camo.githubusercontent.com/d0cebaa34bfe98baf7044e1143bc2ff0ce7c1c112caaa30e245a33751c921f6d/68747470733a2f2f696d672e616c6963646e2e636f6d2f7466732f54423149384f416e6b766f4b31526a535a467758586369434658612d313030302d3238352e706e67)
+
+原因是你可能为了改善性能使用 preload 来缓存一定的资源，但是如果没有用到，你就做了无用功。在手机上，这相当于浪费了用户的流量，所以明确你要 preload 对象。
+
+### 如何检测 preload 支持情况？
+
+用下面的代码段检测浏览器是否支持`<link rel=”preload”>`：
+
+```
+const preloadSupported = () => {
+    const link = document.createElement('link');
+    const relList = link.relList;
+    if (!relList || !relList.supports)
+        return false;
+    return relList.supports('preload');
+};
+```
+
+### 参考资料
+
+【1】[使用 Proload/Prefetch 优化你的应用](https://github.com/happylindz/blog/issues/17)
+
