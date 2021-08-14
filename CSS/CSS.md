@@ -416,3 +416,47 @@ div{
 
 【1】[css 伪类与伪元素区别](https://github.com/lgwebdream/FE-Interview/issues/18#)
 
+## display属性
+
+### list-item
+
+按照MDN上的说明
+
+> The element generates a block box for the content and a separate list-item inline box.
+
+设置该属性值后，为会元素内容生成一个块级盒子和一个list-item的行内盒子。
+
+目前了解的功效是，可以模拟`ul`和`li`无序列表的效果。
+
+示例代码中利用`list-style`属性值达成效果。
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+        div{
+            padding-left: 30pt;
+        }
+        span{ 
+            display:list-item;
+            list-style: disc outside none;
+        }
+    </style>
+  </head>
+  <body>
+    <div><span>111111</span><span>222222</span><span>333333</span></div>
+  </body>
+</html>
+```
+
+#### 参考资料
+
+【1】[displaylist-item-的意思和用法](https://dfang.wordpress.com/2009/08/03/displaylist-item-%E7%9A%84%E6%84%8F%E6%80%9D%E5%92%8C%E7%94%A8%E6%B3%95/)
+
+【2】[MDN display-listitem](https://developer.mozilla.org/en-US/docs/Web/CSS/display)
+
