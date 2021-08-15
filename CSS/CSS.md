@@ -147,42 +147,58 @@ Web页面可视化CSS渲染的一部分，布局过程中生成<strong>块级盒
 z-index可以设置成三个值：
 
 - auto，默认值。当设置为auto的时候，当前元素的层叠级数是0，同时这个盒不会创建新的层级上下文（除非是根元素）；
-- &lt;integer&gt;指示层叠级数，无论是何整数值，都会创建一个新的层叠上下文；
+- &lt;integer&gt;，指示层叠级数，无论是何整数值，都会创建一个新的层叠上下文；
 - inherit。
 
-除了由根元素创建的根层叠上下文以外，其它上下文是由z-index不为auto的<i>positioned</i>元素所创建。
+除了由根元素创建的根层叠上下文以外，其它上下文是由z-index不为`auto`的`positioned`元素所创建。
 
 ### 特征
 
-- 可以嵌套
-- 每个层叠上下文相对于兄弟元素是完全独立的，其内部规则不会影响到外部	。
-- 每个层叠上下文都会被父层叠上下文当作一个元素施加层叠规则。  
+- 层叠上下文的层叠水平要比普通元素高
+- 层叠上下文可以阻断元素的混合模式
+- 可以嵌套，内部层叠上下文及其所有子元素均受制于外部的层叠上下文。
+- 每个层叠上下文相对于兄弟元素是完全独立的，其内部规则不会影响到外部，当处理层叠时只考虑子元素。
+- 每个层叠上下文是自成体系的，当元素发生层叠的时候，整个元素被认为是在父层叠上下文的层叠顺序中。
 
 ### 产生条件
 
+摘自[MDN](https://developer.mozilla.org/zh-CN/docs/Web/CSS/CSS_Positioning/Understanding_z_index/The_stacking_context)：
+
 - 根元素（&lt;html&gt;）
-- <i>position:fixed</i>
-- z-index值不为<i>auto</i>的绝对/相对定位
-- flex项目且z-index不为<i>auto</i>
-- transform不为<i>none</i>
-- opacity < 1
-- mix-blend-mode不为<i>normal</i>
-- filter不为<i>none</i>
-- perspective不为<i>none</i>
-- isolation为<i>isolate</i>
-- will-change
-- webkit-overflow-scrolling为<i>touch</i>  
+- <i>position:`fixed`</i>
+- z-index值不为`auto`的绝对/相对定位
+- flex、grid容器子元素且z-index不为`auto`
+- opacity < 1的元素
+- mix-blend-mode不为`normal`
+- 以下任意属性值不为 `none` 的元素：
+  - transform
+  - filter
+  - perspective
+  - clip-path
+  - mask/maks-image/mask-border
+- isolation为`isolate`
+- will-change值设定了任一属性而该属性在 non-initial 值时会创建层叠上下文的元素
+- webkit-overflow-scrolling为`touch`的元素
+- `contain`属性值为 `layout`、`paint` 或包含它们其中之一的合成值（比如 `contain: strict`、`contain: content`）的元素。
 
 ### 规则
 绘制的规则按照先后次序绘制：
 
-- 创建层叠上下文的元素的背景和边界；
-- z-index为负值的子元素，数值越小越早被绘制；
-- 同时满足<i>in-flow</i>、<i>non-inline-level</i>、<i>non-positioned</i>的后代元素；
-- <i>non-positioned</i>的浮动元素；
-- 满足<i>in-flow</i>、<i>inline-level</i>、<i>non-positioned</i>的后代元素，包含行内表格和块；
-- 层叠级数为0的子层叠上下文以及<i>positioned</i>且层叠级数为0的后代元素；
-- 层叠级数大于等于1的<i>positioned</i>子层叠上下文，数值越小越早被绘制； 
+1. 创建层叠上下文的元素的背景和边界；
+2. z-index为负值的子层叠上下文元素，数值越小层级越低；
+3. 满足<i>in-flow（正常流式布局）</i>、<i>none-inline-level（非行内级元素）</i>、<i>non-positioned</i>（无position定位）的后代元素；
+4. <i>无position定位</i>（static除外）的浮动元素；
+5. 满足<i>in-flow（正常流式布局）</i>、<i>inline-level（行内级元素）</i>、<i>non-positioned</i>的后代元素，包含行内表格和块；
+6. 层叠级数为0的子层叠上下文以及<i>positioned</i>（position定位）且层叠级数为0的后代元素；
+7. 层叠级数大于0的<i>positioned</i>子层叠上下文，数值越小层级越低； 
+
+### 参考资料
+
+【1】[CSS规范文档:z-index](https://drafts.csswg.org/css2/#propdef-z-index)
+
+【2】[层叠顺序（stacking level）与堆栈上下文（stacking context）知多少](https://github.com/chokcoco/iCSS/issues/48)
+
+【3】[深入理解CSS中的层叠上下文和层叠顺序](https://www.zhangxinxu.com/wordpress/2016/01/understand-css-stacking-context-order-z-index/)
 
 ## link和@import的区别
 
@@ -459,4 +475,43 @@ div{
 【1】[displaylist-item-的意思和用法](https://dfang.wordpress.com/2009/08/03/displaylist-item-%E7%9A%84%E6%84%8F%E6%80%9D%E5%92%8C%E7%94%A8%E6%B3%95/)
 
 【2】[MDN display-listitem](https://developer.mozilla.org/en-US/docs/Web/CSS/display)
+
+## background属性
+
+`background`属性是一个简写属性，以在一次声明中定义一个或多个属性：[`background-clip`](https://developer.mozilla.org/zh-CN/docs/Web/CSS/background-clip)、[`background-color`](https://developer.mozilla.org/zh-CN/docs/Web/CSS/background-color)、[`background-image`](https://developer.mozilla.org/zh-CN/docs/Web/CSS/background-image)、[`background-origin`](https://developer.mozilla.org/zh-CN/docs/Web/CSS/background-origin)、[`background-position`](https://developer.mozilla.org/zh-CN/docs/Web/CSS/background-position)、[`background-repeat`](https://developer.mozilla.org/zh-CN/docs/Web/CSS/background-repeat)、[`background-size`](https://developer.mozilla.org/zh-CN/docs/Web/CSS/background-size)，和 [`background-attachment`](https://developer.mozilla.org/zh-CN/docs/Web/CSS/background-attachment)。
+
+在盒子模型中是从`border`开始充满整个盒子区域，只不过实线边框（solid）部分遮住了部分`background`。
+
+### background-clip
+
+该属性设置元素的背景是否延伸到边框、内边距或内容盒子下。[默认值](https://drafts.csswg.org/css-backgrounds-3/#background-clip)为`border-box`
+
+根元素有一个不同的绘制区域，因此该属性对其无效。
+
+### background-color
+
+该属性设置元素的背景颜色，属性值为颜色值或`transparent。`
+
+绘制区域从元素边框的左上角起到右下角止。
+
+### backgrond-repeat
+
+该属性定义背景图像的重复方式，可以沿着水平轴、垂直轴、两个轴重复，或者根本不重复。[默认值](https://drafts.csswg.org/css-backgrounds-3/#background-repeat)为`repeat`
+
+### background-image
+
+该属性为一个元素设置一个或者多个背景图像。
+
+绘制区域从边框边缘的左上角起到边框的右下角为止。有两个因素决定了绘制区域：
+
+- `background-origin` 属性决定了指定背景的**相对定位位置**，默认为 `padding-box`。
+- `background-clip` 属性决定了背景的**绘制区间**，默认为 `border-box`。所以在 `background-repeat: repeat` 即默认情况下：
+
+> The image is repeated in this direction as often as needed to cover the background painting area.
+
+可以查看[codepen上的示例](https://codepen.io/david_xie/pen/WNjWZpp)，**注意**：demo中设置了`background-repeat: no-repeat`影响了背景图片的绘制区域。
+
+### 参考资料
+
+【1】[MDN background](https://developer.mozilla.org/zh-CN/docs/Web/CSS/background)
 
