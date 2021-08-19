@@ -64,6 +64,7 @@
 ### &lt;body&gt;末端引入
 在body标签尾部中引入脚本，不设置*defer*和*async*属性，HTML解析不需要暂停，当解析完成后脚本加载完毕并执行，如下图所示：
 ![](https://i.imgur.com/lRLXSbc.png)
+
 ### 在head标签中引入且设置defer属性
 当页面在head标签中引入设置*defer*属性的脚本时，HTML页面解析的示意图如下：
 ![](https://i.imgur.com/vqC4Pw2.png)
@@ -80,7 +81,13 @@
 - ```defer```的脚本按照在HTML文档中出现的位置按序加载，而```async```可能乱序。
 - 两者可能会阻塞渲染。
 
-由于async的脚本可能会阻塞同步脚本（即HTML中普通加载的JS脚本），而同步脚本对于页面中的关键内容很重要，所以在async和defer间优先选择defer  
+由于`async`的脚本可能会阻塞同步脚本（即HTML中普通加载的JS脚本），而同步脚本对于页面中的关键内容很重要，所以在`async`和`defer`间优先选择`defer  `
+
+### 记一次引入脚本的错误
+
+在一次尝试从HTML文件中引入vue.js使用时，误将所有操作的脚本都放在`<head></head>`中引入，发现模板数据没有替换成真实数据。
+
+按照上文的解释，浏览器依照顺序解析HTML时，在*head*标签中加载脚本时，模板数据所在的DOM节点内容尚未加载，此时脚本的操作无效，故一般推荐将脚本放置于*body*标签。
 
 ### 参考资料  
 
@@ -183,3 +190,10 @@ const preloadSupported = () => {
 
 【1】[使用 Proload/Prefetch 优化你的应用](https://github.com/happylindz/blog/issues/17)
 
+# 为何推荐CSS在head标签中引入
+
+
+
+### 参考资料
+
+【1】[为什么CSS要在head标签中引入](https://segmentfault.com/a/1190000037606300)

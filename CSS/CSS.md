@@ -209,9 +209,9 @@ z-index可以设置成三个值：
 ## 居中布局
 ### 水平居中
 
-- 若是行内元素，为其父元素设置<i>text-align:center</i>即可
-- 若是块级元素，该元素设置<i>margin:0 auto</i>
-- 子元素包含<i>float:left</i>属性，则可让父元素宽度设置为<i>fit-content</i>，并且配合margin。另应注意<b>fit-content</b>是CSS3中新增的属性值。
+- 若是行内元素，为其父元素设置<i>`text-align:center`</i>即可
+- 若是块级元素，该元素设置<i>`margin:0 auto`</i>
+- 子元素包含<i>`float:left`</i>属性，则可让父元素宽度设置为<i>`fit-content`</i>，并且配合margin。另应注意<b>fit-content</b>是CSS3中新增的属性值。
 ```css
 .parent{
     width: -moz-fit-content;
@@ -309,7 +309,7 @@ z-index可以设置成三个值：
 - HTML5中新增hidden布尔属性，让开发者自定义元素的隐藏性
 - 父元素设置为```display:none```时该属性会侵入到其下所有后代元素中。
 - 无法获取焦点
-- 无法响应任何事件，无论是捕获、命中目标和冒泡阶段均不可以。
+- 无法响应任何事件，无论是捕获、命中目标和冒泡阶段均不可以。（待验证或调整说法，原博评论区出现不同观点）
 - 不影响form表单提交数据
 - CSS的counter属性会忽略```display:none```的元素
 
