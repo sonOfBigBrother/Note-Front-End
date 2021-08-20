@@ -192,8 +192,92 @@ const preloadSupported = () => {
 
 # 为何推荐CSS在head标签中引入
 
+### 准备
 
+利用Chrome的Devtool提供的*Performance*功能分析网页的各项性能指标，并且会将网页解析渲染流程以图形展示出来。
+
+可参看[这篇掘金文章](https://juejin.cn/post/6844903727728427022)了解基本用法。
+
+### head标签中引入
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSS Link Test</title>
+    <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/1.4.0/css/bootstrap.css" rel="stylesheet">
+</head>
+<body>
+    <p>你好，菜鸡！</p>
+</body>
+</html>
+```
+
+![](./pic/css-link-in-head.png)
+
+简单描述下浏览器处理html页面的大致过程
+
+1. 浏览器首先解析HTML，生成DOM树
+2. 浏览器同步调用网络线程下载<i>bootstrap.css</i>文件，此时HTML尚未渲染；等到css文件下载完毕后，开始解析css样式，生成CSSOM树;之后再结合DOM树和CSSOM树生成Layout树，开始计算布局，绘制内容。
+
+根据上面的流程说明，当外部css在head标签中引入时，HTML的解析步骤正常执行，但渲染步骤会等待css文件下载完毕并解析成功之后再进行，也就是**当css在head标签中引入时，阻塞HTML的渲染。**
+
+### body标签尾部引入
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSS Link Test</title>
+    <!-- <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/1.4.0/css/bootstrap.css" rel="stylesheet"> -->
+</head>
+<body>
+    <p>你好，菜鸡！</p>
+    <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/1.4.0/css/bootstrap.css" rel="stylesheet">
+</body>
+</html>
+```
+
+![](./pic/css-link-in-body-tail.png)
+
+大致流程：
+
+1. 在解析到link标签之前，浏览器自上而下解析HTML生成DOM树，然后与CSSOM树（非外部引入的CSS）结合生成了Layout树，计算布局之后进行绘制，将页面渲染到浏览器中。
+2. 浏览器解析到link标签，下载外部css文件；下载完后开始解析css样式生成CSSOM树，并重新解析HTML生成DOM树；将DOM树和CSSOM树结合生成Layout树，进行计算布局和绘制，完成页面的渲染，这个过程称为**reflow**，也就是回流，是一种消耗性能的现象。
+
+**当外部css在body标签中引入时，不会阻塞HTML的渲染**，所以页面呈现过程应该如下：首先，在css加载完成之前，文本内容先渲染完成，但未带有外部的css样式；css加载完成之后，页面中文本样式发生改变；
+
+### body标签中间引入
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSS Link Test</title>
+    <!-- <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/1.4.0/css/bootstrap.css" rel="stylesheet"> -->
+</head>
+<body>
+    <p>你好，菜鸡！</p>
+    <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/1.4.0/css/bootstrap.css" rel="stylesheet">
+    <p>Hello,Newbie！</p>
+</body>
+</html>
+```
+
+![](./pic/css-link-in-body-middle.png)
+
+**当css在body标签中引入时，阻塞HTML的解析，但不阻塞HTML的渲染。**
 
 ### 参考资料
 
-【1】[为什么CSS要在head标签中引入](https://segmentfault.com/a/1190000037606300)
+【1】[为什么CSS要在head标签中引入](https://zhuanlan.zhihu.com/p/268726432)
+
