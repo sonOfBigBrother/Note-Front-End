@@ -3,18 +3,17 @@
 ---
 ## 数据类型
 
-按照[MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures)上的说明，最新版的ECMAScript标准，Javascript总共有9种数据类型：
+按照[MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures)上的说明，最新版的[ECMAScript标准](https://262.ecma-international.org/12.0/#sec-ecmascript-language-types)，Javascript总共有8种数据类型：
 
-- 6种原始类型：
-  - undefined
+- 7种原始类型：
+  - Undefined
   - Boolean
   - Number
   - BigInt
   - String
   - Symbol
-- null
+  - Null
 - Object
-- Function
 
 ## 执行上下文
 
@@ -1734,6 +1733,73 @@ function unique (arr) {
 
 【1】[JavaScript专题之数组去重](https://github.com/mqyqingfeng/Blog/issues/27#)
 
+## Map
+
+### v8引擎实现的map中能存储多少项属性键值对
+
+业界最流行的JavaScript引擎便是google开发的v8引擎，就以此为例探究map对象和object对象各自能存储多少项。
+
+首先看看map对象的存储情况属性键值对：
+
+```javascript
+const myObject = new Map();
+for (let i = 0; i <= 50_000_000; i++) {
+  myObject.set(i, i);
+  if (i % 100000 == 0) {
+    console.log(i);
+  }
+}
+// 0
+// 100000
+// 200000
+// …
+// 16400000
+// 16500000
+// 16600000
+// 16700000
+// Uncaught RangeError: Value undefined out of range for undefined options property undefined
+```
+
+在插入1670万个属性后控制台抛出`RangeError`
+
+接下来看看Object对象的情况
+
+```javascript
+const myObject = {};
+for (let i = 0; i <= 50_000_000; i++) {
+  myObject["myobj_" + i] = i;
+  if (i % 100000 == 0) {
+    console.log(i);
+  }
+}
+// 0
+// 100000
+// 200000
+// …
+// 8000000
+// 8100000
+// 8200000
+// 8300000
+```
+
+在插入830万个属性后就停止也没有抛出异常。
+
+根据[SO](https://stackoverflow.com/questions/54452896/maximum-number-of-entries-in-node-js-map)上v8引擎开发者的说明，Map最多能存储`2^24=16,777,216`项，Object最多存储`2^23=8,388,608`项
+
+> 8 developer here. I can confirm that 2^24 is the maximum number of entries in a `Map`. That's not a bug, it's just the implementation-defined limit.
+>
+> The limit is determined by:
+>
+> - The `FixedArray` backing store of the `Map` has a maximum size of 1GB (independent of the overall heap size limit)
+> - On a 64-bit system that means 1GB / 8B = 2^30 / 2^3 = 2^27 ~= 134M maximum elements per `FixedArray`
+> - A `Map` needs 3 elements per entry (key, value, next bucket link), and has a maximum load factor of 50% (to avoid the slowdown caused by many bucket collisions), and its capacity must be a power of 2. 2^27 / (3 * 2) rounded down to the next power of 2 is 2^24, which is the limit you observe.
+
+#### 参考资料
+
+[an-amazing-error-message-if-you-put-more-than-2-24](https://searchvoidstar.tumblr.com/post/659634228574715904/an-amazing-error-message-if-you-put-more-than-2-24)
+
+[maximum-number-of-entries-in-node-js-map](https://stackoverflow.com/questions/54452896/maximum-number-of-entries-in-node-js-map)
+
 ## undefined vs ReferenceError
 
 先比较下undefined和ReferenceError，JavaScript中声明但未初始化的变量或是typeof未声明的变量将会赋予*undefined*值,，而尝试访问一个为未声明的变量时会抛出ReferenceError。
@@ -1767,6 +1833,8 @@ hoist = 'Hoisted';
 console.log(hoist); // Output: ReferenceError: hoist is not defined
 hoist = 'Hoisted'; 
 ```
+
+https://stackoverflow.com/questions/54452896/maximum-number-of-entries-in-node-js-map)
 
 ## 提升
 
