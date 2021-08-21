@@ -1133,10 +1133,6 @@ var curry = fn =>
 
 【2】[Currying](https://zh.javascript.info/currying-partials)
 
-## ==和===相等运算符的区别
-
-全等号`===`检查严格相等，意味着类型和值必须相同；等号`==`会先进行类型强制转换，然后严格比较。
-
 ## Promise对象
 Promise简单来说是一个容器，保存着某个未来才会结束的事件的结果。从语法上说，Promise是一个对象，从它可以获取异步操作的消息。Promise 提供统一的API，各种异步操作都可以用同样的方法进行处理。  
 Promise对象有以下两个特点：
@@ -1158,6 +1154,20 @@ const promise = new Promise((resolve,reject) => {
 ```
 
 Promise构造函数接受一个函数作为参数，该函数的两个参数分别是resolve和reject。它们是由 JavaScript引擎提供的两个函数，不用自己部署。 
+
+`resolve`函数的作用是，将`Promise`对象的状态从“未完成”变为“成功”（即从 `pending` 变为 `resolved`），在异步操作成功时调用，并将异步操作的结果，作为参数传递出去；`reject`函数的作用是，将`Promise`对象的状态从“未完成”变为“失败”（即从 `pending `变为 `rejected`），在异步操作失败时调用，并将异步操作报出的错误，作为参数传递出去。
+
+`Promise`实例生成以后，可以用`then`方法分别指定`resolved`状态和`rejected`状态的回调函数。
+
+```javascript
+promise.then(function(value) {
+  // success
+}, function(error) {
+  // failure
+});
+```
+
+`then`方法可以接受两个回调函数作为参数。第一个回调函数是`Promise`对象的状态变为`resolved`时调用，第二个回调函数是`Promise`对象的状态变为`rejected`时调用。这两个函数都是可选的，不一定要提供。它们都接受`Promise`对象传出的值作为参数。
 
 ### 参考资料 
 
@@ -1581,17 +1591,76 @@ DOM2级事件规定的事件流包含三个阶段：
 - 处于目标阶段
 - 事件冒泡阶段
 
-## 真值和假值
-一个值是真值（truthy）还是假值（falsy），取决于它在布尔上下文中是如何计算的。JavaScript有6个假值：
+## ==和===相等运算符的区别
 
-- false
-- undefined
-- null
-- " "
-- NaN
-- 0
+全等号`===`检查严格相等，意味着类型和值必须相同；等号`==`会先进行类型强制转换，然后严格比较。
+
+## 真值和假值
+
+一个值是真值（truthy）还是假值（falsy），取决于它在布尔上下文中是如何计算的。JavaScript有6种情况对应价值：
+
+- `false`
+- `undefined`
+- `null`
+- `''`、`""`，`` ` ` ``
+- `NaN`
+- `0`、`-0`、`0n`
 
 其余都可看做真值。
+
+### 处理真假值的建议
+
+1. 避免直接比较
+
+   当在条件语句中处理单值时，无需与`true`或`false`比较。
+
+   ```javascript
+   // instead of
+   if (x == false) // ...
+   // runs if x is false, 0, '', or []
+   
+   // use
+   if (!x) // ...
+   // runs if x is false, 0, '', NaN, null or undefined
+   ```
+
+2. 使用严格相等`===`
+
+   ```javascript
+   // instead of
+   if (x == y) // ...
+   // runs if x and y are both truthy or both falsy
+   // e.g. x = null and y = undefined
+   
+   // use
+   if (x === y) // ...
+   // runs if x and y are identical...
+   // except when both are NaN
+   ```
+
+3. 必要时先转换成布尔值
+
+   可以使用`Boolean`的构造函数或者`!!`转换，可以处理`NaN`不等于`NaN`的情况
+
+   ```javascript
+    // instead of
+    if (x === y) // ...
+    // runs if x and y are identical...
+    // except when both are NaN
+    
+    // use
+    if (Boolean(x) === Boolean(y)) // ...
+    // or
+    if (!!x === !!y) // ...
+    // runs if x and y are identical...
+    // including when either or both are NaN
+   ```
+
+   
+
+### 参考资料
+
+【1】[Truthy and Falsy: When All is Not Equal in JavaScript](https://www.sitepoint.com/javascript-truthy-falsy/)
 
 ## 数组
 
