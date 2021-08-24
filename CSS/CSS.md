@@ -515,3 +515,32 @@ div{
 
 【1】[MDN background](https://developer.mozilla.org/zh-CN/docs/Web/CSS/background)
 
+## animation属性
+
+**animation** 属性用来指定一组或多动画，每组之间用逗号相隔。是 [`animation-name`](https://developer.mozilla.org/zh-CN/docs/Web/CSS/animation-name)，[`animation-duration`](https://developer.mozilla.org/zh-CN/docs/Web/CSS/animation-duration), [`animation-timing-function`](https://developer.mozilla.org/zh-CN/docs/Web/CSS/animation-timing-function)，[`animation-delay`](https://developer.mozilla.org/zh-CN/docs/Web/CSS/animation-delay)，[`animation-iteration-count`](https://developer.mozilla.org/zh-CN/docs/Web/CSS/animation-iteration-count)，[`animation-direction`](https://developer.mozilla.org/zh-CN/docs/Web/CSS/animation-direction)，[`animation-fill-mode`](https://developer.mozilla.org/zh-CN/docs/Web/CSS/animation-fill-mode) 和 [`animation-play-state`](https://developer.mozilla.org/zh-CN/docs/Web/CSS/animation-play-state) 属性的一个简写属性形式。
+
+### animation-name
+
+指定应用的一系列动画，每个名称代表一个由`@keyframes`定义的动画序列。默认值为`none`
+
+### animation-duration
+
+指定一个动画周期的时长，单位为s或ms，默认值为`0`s，表示无动画。
+
+### animation-timing-function
+
+定义CSS动画在每一动画周期中执行的节奏。可能值为一或多个`<timing-function>`。默认值为`ease`
+
+### animation-delay
+
+定义动画于何时开始，即从动画应用在元素上到动画开始的这段时间的长度。
+
+`0s`是该属性的默认值，代表动画在应用到元素上后立即开始执行。否则，该属性的值代表动画样式应用到元素上后到开始执行前的时间长度；
+
+### animation-iteration-count
+
+定义动画在结束前运行的次数，可以是1次或无限循环。
+
+### animation-direction
+
+指示动画是否反向播放
