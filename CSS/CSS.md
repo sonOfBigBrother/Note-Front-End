@@ -432,6 +432,61 @@ div{
 
 【1】[css 伪类与伪元素区别](https://github.com/lgwebdream/FE-Interview/issues/18#)
 
+## 伪类
+
+### :root
+
+`:root` 伪类匹配文档树的根元素。应用到HTML，`:root` 即表示为`<html>`元素，除了优先级更高外，相当于html标签选择器。
+
+#### 语法样式
+
+```css
+:root { 样式属性 }
+```
+
+在使用 `CSS变量` 的时候，声明全局CSS变量时 `:root` 很有用。
+
+### :empty
+
+`:empty` 伪类，代表没有子元素的元素。 这里说的子元素，只计算元素结点及文本（包括空格），注释、运行指令不考虑在内。
+
+考虑一个例子：
+
+```html
+div{
+  height:20px;
+  background:#ffcc00;
+}
+div:empty{
+  display:none;
+}
+<div>1</div>
+<div> </div>
+<div></div>
+```
+
+上述的例子，前两个div会正常显示，而第三个则会 `display:none` 隐藏。
+
+也就是说，要想 `:empty` 生效，标签中连哪怕一个空格都不允许存在。
+
+### :not()
+
+用来匹配不符合一组选择器的元素。由于它的作用是防止特定的元素被选中，它也被称为*反选伪类*
+
+- `:not()` 伪类不能被嵌套，这意味着 `:not(:not(...))` 是无效的。
+- 由于伪元素不是简单的选择器，它们不能被当作 `:not()` 中的参数，形如 `:not(p::before)` 这样的选择器将无效。
+
+- `:not` 伪类不像其它伪类，它不会增加选择器的优先级。它的优先级即为它参数选择器的优先级。
+
+> 我们知道，选择器是有优先级之分的，通常而言，伪类选择的权重与类选择器（class selectors，例如 `.example`），属性选择器（attributes selectors，例如 `[type="radio"]`）的权重相同，但是有一个特例，就是 `:not()`。`:not` 否定伪类在优先级计算中不会被看作是伪类，但是在计算选择器数量时还是会把其中的选择器当做普通选择器进行计数。
+
+- 使用 `:not(*)` 将匹配任何非元素的元素，因此这个规则将永远不会被应用。
+- 这个选择器只会应用在一个元素上， 你不能用它在排除所有祖先元素。 举例来说， body :not(table) a 将依旧会应用在table内部的`<a>` 上, 因为 `<tr>`将会被:not() 这部分选择器匹配。（摘自[MDN](https://developer.mozilla.org/zh-CN/docs/Web/CSS/:not)）
+
+### 参考资料
+
+【1】[几个特殊且实用的伪类选择器](https://github.com/chokcoco/iCSS/issues/57)
+
 ## display属性
 
 ### list-item
