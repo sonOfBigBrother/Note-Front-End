@@ -905,8 +905,12 @@ let b = {...obj}
 
 ### 深拷贝
 
+实现深拷贝的核心思路是递归。
+
+#### 版本一
+
 ```javascript
-funciton deepClone() {
+funciton deepClone(obj) {
 	let clone = Object.assign({}, obj);
 	Object.keys(clone).forEach(
     	key => (clone[key] = typeof obj[key] === 'object' ? deepClone(obj[key]) : obj[key])
@@ -918,6 +922,53 @@ funciton deepClone() {
       	: clone;
 };
 ```
+
+#### 版本二(简易)
+
+```js
+function deepClone(obj) {
+    // 如果是 值类型 或 null，则直接return
+    if(typeof obj !== 'object' || obj === null) {
+        return obj
+    }
+    
+    // 定义结果对象
+    let copy = {}
+    
+    // 如果对象是数组，则定义结果数组
+    if(obj.constructor === Array) {
+        copy = []
+    }
+    
+    // 遍历对象的key
+    for(let key in obj) {
+        // 如果key是对象的自有属性
+        if(obj.hasOwnProperty(key)) {
+            // 递归调用深拷贝方法
+            copy[key] = deepClone(obj[key])
+        }
+    }
+    
+    return copy
+} 
+```
+
+### clone一个对象
+
+- 使用对象扩展操作符 `...`，对象的可枚举属性可以被拷贝到新对象。
+
+```
+const obj = { a: 1, b: 2 }
+const shallowClone = { ...obj }
+```
+
+- `Object.assign({},obj)`
+- `JSON.parse(JSON.stringify(obj))`可以用来克隆简单对象，但是它是 CPU 密集型；会丢失原型，克隆的对象由 Object 类型创建；并且只接受合法的 JSON 对象。
+- `Object.keys(obj).reduce((acc, key) => (acc[key] = obj[key], acc), {})`，注意——箭头函数中使用了逗号运算符，最终返回的 acc 对象。
+
+#### 参考资料
+
+<a href="http://voidcanvas.com/clone-an-object-in-vanilla-js-in-depth/">克隆对象</a>
 
 ## 类数组对象和arguments
 
@@ -1506,21 +1557,6 @@ function objectFactory() {
 ### 参考资料
 
 【1】[JavaScript深入之new的模拟实现](https://github.com/mqyqingfeng/Blog/issues/13#)
-
-## clone一个对象
-
-- 使用对象扩展操作符 `...`，对象的可枚举属性可以被拷贝到新对象。
-```
-const obj = { a: 1, b: 2 }
-const shallowClone = { ...obj }
-```
-- Object.assign({},obj)
-- JSON.parse(JSON.stringify(obj))可以用来克隆简单对象，但是它是CPU密集型；会丢失原型，克隆的对象由Object类型创建；并且只接受合法的JSON
-- Object.keys(obj).reduce((acc, key) => (acc[key] = obj[key], acc), {})
-
-### 参考资料
-
-<a href="http://voidcanvas.com/clone-an-object-in-vanilla-js-in-depth/">克隆对象</a>
 
 ## 深度冻结
 
