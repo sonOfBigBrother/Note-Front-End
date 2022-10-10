@@ -1,7 +1,7 @@
 [toc]
 
 ---
-## HTML语义化及其优点
+## HTML 语义化及其优点
 语义化是指文本内容的结构化（内容语义化），选择合乎语义的标签（代码语义化），便于开发者在阅读，维护和写出更优雅的代码的同时，让浏览器的爬虫和辅助技术更好地解析。
 
 语义化的优点：  
@@ -12,12 +12,12 @@
 
 常见的语义化标签及其说明：
 
-- &lt;header&gt;：文档或文章的头部信息，如标题、logo和搜索框
+- &lt;header&gt;：文档或文章的头部信息，如标题、logo 和搜索框
 - &lt;nav&gt;：文章的导航栏、链接等；
-- &lt;main&gt;：文章的主要内容，在一份文档中是<strong>唯一</strong>的,后代元素常包含&lt;article&gt;。	
+- &lt;main&gt;：文章的主要内容，在一份文档中是<strong>唯一</strong>的，后代元素常包含&lt;article&gt;。	
 - &lt;article&gt;：文档、页面、应用或网站中的独立结构，其意在成为可独立分配的或可复用的结构，如论坛帖子、新闻文章或博客等。
 - &lt;section&gt;：表示整体的一部分或文章中的一节，一般来说包含一个标题。
-- &lt;aside&gt;：一个和其余页面内容几乎无关的部分，被认为是独立于该内容的一部分并且可以被单独的拆分出来而不会使整体受影响，通常表现为侧边栏或者嵌入内容。
+- &lt;aside&gt;：一个和其余页面内容几乎无关的部分，被认为是独立于该内容的一部分并且可以被单独地拆分出来而不会使整体受影响，通常表现为侧边栏或者嵌入内容。
 - &lt;footer&gt;：最近一个章节内容或者根节点元素的页脚，通常包含作者、版权信息或者相关链接
 
 此处插入&lt;i&gt;和&lt;em&gt;、&lt;b&gt;和&lt;strong&gt;的比较来澄清语义化上的一些混淆：  
@@ -25,9 +25,35 @@
 - &lt;i&gt;表示一段普通文本中，因为某种原因和正常文本不同，例如专业术语、外语短语或排版用的文字，其通常表现为斜体，不会改变语义；而&lt;em&gt;表示强调文本内容，强调位置的不同会改变语义，其表现形式也是斜体。
 - &lt;b&gt;中的文本通常显示粗体，用于吸引读者的注意力，不具备强调重要性的作用，也不影响语态和语气；&lt;strong&gt;强调内容的重要性、严重性或紧急性。  
 
-具体细节可以查看<a href="http://w3c.github.io/html/textlevel-semantics.html#the-em-element">W3C的标签规范文档</a>
-## 置换元素
-一个内容不受CSS视觉格式化模型控制，CSS渲染模型并不考虑对此内容的渲染，且本身一般拥有固定尺寸的元素。
+具体细节可以查看<a href="http://w3c.github.io/html/textlevel-semantics.html#the-em-element"> W3C 的标签规范文档</a>
+## 可替换元素
+可替换元素（replaced element）一个内容不受 CSS 视觉格式化模型控制，CSS 渲染模型并不考虑对此内容的渲染，且本身一般拥有固定尺寸的元素。
+
+简单来说，它们的内容不受当前文档的样式的影响。CSS 可以影响可替换元素的**位置**，但不会影响到可替换元素自身的内容。某些可替换元素，例如<i>iframe</i>元素，可能具有自己的样式表，但它们不会继承父文档的样式。
+
+典型的可替换元素有：
+
+- iframe
+- video
+- embed
+- img
+
+有些元素仅在特定情况下被作为可替换元素处理，例如：
+
+- option
+- audio
+- canvas
+- object
+- applet
+
+HTML 规范也说了<i>input</i>元素可替换，因为 `"image"` 类型的<i>input</i>元素就像&lt;img&gt;一样被替换。但是其他形式的控制元素，包括其他类型的元素，被明确地列为非可替换元素（non-replaced elements）
+
+用 CSS `content`属性插入的对象是匿名的可替换元素。它们并不存在于 HTML 标记中，因此是“匿名的”
+
+### 参考资料
+
+【1】[MDN](https://developer.mozilla.org/zh-CN/docs/Web/CSS/Replaced_element)
+
 ## 行内元素、块级元素与行内块元素比较
 ### 行内元素
 特性：
@@ -190,15 +216,15 @@ const preloadSupported = () => {
 
 【1】[使用 Proload/Prefetch 优化你的应用](https://github.com/happylindz/blog/issues/17)
 
-# 为何推荐CSS在head标签中引入
+## 为何推荐 CSS 在 head 标签中引入
 
 ### 准备
 
-利用Chrome的Devtool提供的*Performance*功能分析网页的各项性能指标，并且会将网页解析渲染流程以图形展示出来。
+利用 Chrome 的 Devtool 提供的*Performance*功能分析网页的各项性能指标，并且会将网页解析渲染流程以图形展示出来。
 
 可参看[这篇掘金文章](https://juejin.cn/post/6844903727728427022)了解基本用法。
 
-### head标签中引入
+### head 标签中引入
 
 ```html
 <!DOCTYPE html>
@@ -279,5 +305,5 @@ const preloadSupported = () => {
 
 ### 参考资料
 
-【1】[为什么CSS要在head标签中引入](https://zhuanlan.zhihu.com/p/268726432)
+【1】[为什么 CSS 要在 head 标签中引入](https://zhuanlan.zhihu.com/p/268726432)
 
